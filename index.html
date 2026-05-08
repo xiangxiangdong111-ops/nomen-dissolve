@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>命名即消解</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #f7f5f0;
+    --bg-deep: #eee9df;
+    --text: #3a3630;
+    --text-light: #7a746b;
+    --text-muted: #a9a299;
+    --green-dark: #5a7247;
+    --green-mid: #7a9a62;
+    --green-light: #a3bf8e;
+    --green-pale: #c8dbb3;
+    --accent: #8b6f4e;
+    --card: rgba(255,255,252,0.85);
+    --border: #d8d2c6;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* 背景纹理 */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(163,191,142,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, rgba(200,219,179,0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 80%, rgba(139,111,78,0.04) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 60px 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 头部 */
+  .header {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+
+  .header .icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 24px;
+    opacity: 0.6;
+  }
+
+  .header h1 {
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 600;
+    font-size: 28px;
+    letter-spacing: 6px;
+    color: var(--green-dark);
+    margin-bottom: 12px;
+  }
+
+  .header .subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    font-weight: 300;
+    line-height: 1.8;
+  }
+
+  /* 输入区域 */
+  .input-section {
+    position: relative;
+    margin-bottom: 32px;
+  }
+
+  .input-wrapper {
+    position: relative;
+    padding: 24px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    transition: border-color 0.4s, box-shadow 0.4s;
+  }
+
+  .input-wrapper:focus-within {
+    border-color: var(--green-mid);
+    box-shadow: 0 0 0 3px rgba(122,154,98,0.1), 0 8px 32px rgba(90,114,71,0.08);
+  }
+
+  .input-label {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 13px;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  #userInput {
+    width: 100%;
+    min-height: 160px;
+    border: none;
+    outline: none;
+    resize: vertical;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 16px;
+    line-height: 1.9;
+    color: var(--text);
+    background: transparent;
+    font-weight: 300;
+  }
+
+  #userInput::placeholder {
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  /* 草枝装饰 */
+  .branch {
+    position: absolute;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+  }
+
+  .input-wrapper:focus-within .branch,
+  .input-wrapper:hover .branch {
+    opacity: 1;
+  }
+
+  .branch-tl { top: -8px; left: -8px; width: 80px; }
+  .branch-tr { top: -8px; right: -8px; width: 80px; transform: scaleX(-1); }
+  .branch-bl { bottom: -8px; left: -8px; width: 80px; transform: scaleY(-1); }
+  .branch-br { bottom: -8px; right: -8px; width: 80px; transform: scale(-1,-1); }
+
+  /* 按钮 */
+  .btn-area {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  #dissolveBtn {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 16px;
+    letter-spacing: 4px;
+    padding: 14px 48px;
+    background: var(--green-dark);
+    color: #f5f3ee;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 400;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #dissolveBtn:hover {
+    background: var(--green-mid);
+    box-shadow: 0 4px 20px rgba(90,114,71,0.2);
+    transform: translateY(-1px);
+  }
+
+  #dissolveBtn:active {
+    transform: translateY(0);
+  }
+
+  #dissolveBtn:disabled {
+    background: var(--text-muted);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* 等待动画 */
+  .waiting {
+    display: none;
+    text-align: center;
+    padding: 60px 0;
+  }
+
+  .waiting.active { display: block; }
+
+  .waiting .breath {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 24px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--green-pale) 0%, var(--green-light) 50%, transparent 70%);
+    animation: breathe 4s ease-in-out infinite;
+  }
+
+  @keyframes breathe {
+    0%, 100% { transform: scale(0.6); opacity: 0.4; }
+    50% { transform: scale(1); opacity: 0.8; }
+  }
+
+  .waiting .hint {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 14px;
+    color: var(--text-muted);
+    letter-spacing: 3px;
+    animation: fadeInOut 4s ease-in-out infinite;
+  }
+
+  @keyframes fadeInOut {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  /* 结果区域 */
+  .result-section {
+    display: none;
+    animation: fadeUp 0.8s ease forwards;
+  }
+
+  .result-section.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 40px 36px;
+    backdrop-filter: blur(10px);
+  }
+
+  .result-card .tag {
+    display: inline-block;
+    font-family: 'Noto Serif SC', serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--green-dark);
+    background: var(--green-pale);
+    padding: 4px 12px;
+    border-radius: 4px;
+    margin-bottom: 24px;
+  }
+
+  .result-card .content {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 15.5px;
+    line-height: 2.1;
+    color: var(--text);
+    font-weight: 400;
+  }
+
+  .result-card .content p {
+    margin-bottom: 16px;
+  }
+
+  .result-card .content strong {
+    color: var(--green-dark);
+    font-weight: 600;
+  }
+
+  .result-card .content em {
+    color: var(--accent);
+    font-style: normal;
+    border-bottom: 1px solid var(--accent);
+    padding-bottom: 1px;
+  }
+
+  .result-card .content h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--green-dark);
+    margin: 28px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--green-pale);
+    letter-spacing: 2px;
+  }
+
+  .result-card .content h3:first-child {
+    margin-top: 0;
+  }
+
+  .result-card .content ul {
+    padding-left: 20px;
+    margin-bottom: 16px;
+  }
+
+  .result-card .content li {
+    margin-bottom: 6px;
+  }
+
+  .result-card .divider {
+    width: 40px;
+    height: 1px;
+    background: var(--green-pale);
+    margin: 24px auto;
+  }
+
+  .result-card .naming {
+    text-align: center;
+    margin: 24px 0;
+    padding: 24px;
+    background: rgba(163,191,142,0.08);
+    border-radius: 12px;
+    border: 1px dashed var(--green-light);
+  }
+
+  .result-card .naming .label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .result-card .naming .name {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--green-dark);
+    letter-spacing: 4px;
+  }
+
+  /* 底部 */
+  .footer {
+    text-align: center;
+    margin-top: 64px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+  }
+
+  .footer p {
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    line-height: 1.8;
+    font-family: 'Noto Serif SC', serif;
+  }
+
+  /* 错误提示 */
+  .error-msg {
+    display: none;
+    text-align: center;
+    padding: 24px;
+    color: var(--accent);
+    font-size: 14px;
+    font-family: 'Noto Serif SC', serif;
+    letter-spacing: 1px;
+  }
+
+  .error-msg.active { display: block; }
+
+  /* 响应式 */
+  @media (max-width: 640px) {
+    .container { padding: 40px 16px 60px; }
+    .header h1 { font-size: 22px; letter-spacing: 4px; }
+    .result-card { padding: 28px 20px; }
+    #dissolveBtn { padding: 12px 36px; font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header class="header">
+    <svg class="icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M24 4C24 4 20 16 20 24C20 32 24 44 24 44" stroke="#7a9a62" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M24 12C24 12 28 18 32 20" stroke="#a3bf8e" stroke-width="1.2" stroke-linecap="round"/>
+      <path d="M24 18C24 18 19 22 16 26" stroke="#a3bf8e" stroke-width="1.2" stroke-linecap="round"/>
+      <path d="M24 26C24 26 28 30 30 34" stroke="#a3bf8e" stroke-width="1.2" stroke-linecap="round"/>
+      <path d="M24 30C24 30 20 34 18 38" stroke="#a3bf8e" stroke-width="1.2" stroke-linecap="round"/>
+      <circle cx="24" cy="24" r="2" fill="#5a7247" opacity="0.5"/>
+    </svg>
+    <h1>命名即消解</h1>
+    <p class="subtitle">叫出魔鬼名字的那一刻，魔鬼就会消解</p>
+  </header>
+
+  <section class="input-section">
+    <div class="input-wrapper">
+      <!-- 草枝装饰 SVG -->
+      <svg class="branch branch-tl" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 76C4 76 8 56 20 40C32 24 48 16 56 12" stroke="#7a9a62" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.7"/>
+        <path d="M20 40C20 40 16 32 18 24" stroke="#a3bf8e" stroke-width="1" stroke-linecap="round" fill="none" opacity="0.6"/>
+        <path d="M32 28C32 28 28 20 30 12" stroke="#a3bf8e" stroke-width="1" stroke-linecap="round" fill="none" opacity="0.5"/>
+        <path d="M44 20C44 20 40 14 42 6" stroke="#a3bf8e" stroke-width="0.8" stroke-linecap="round" fill="none" opacity="0.4"/>
+        <ellipse cx="18" cy="22" rx="3" ry="6" transform="rotate(-30 18 22)" fill="#c8dbb3" opacity="0.5"/>
+        <ellipse cx="30" cy="12" rx="2.5" ry="5" transform="rotate(-20 30 12)" fill="#c8dbb3" opacity="0.4"/>
+        <ellipse cx="42" cy="6" rx="2" ry="4" transform="rotate(-15 42 6)" fill="#c8dbb3" opacity="0.3"/>
+      </svg>
+      <svg class="branch branch-tr" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 76C4 76 8 56 20 40C32 24 48 16 56 12" stroke="#7a9a62" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.7"/>
+        <path d="M20 40C20 40 16 32 18 24" stroke="#a3bf8e" stroke-width="1" stroke-linecap="round" fill="none" opacity="0.6"/>
+        <path d="M32 28C32 28 28 20 30 12" stroke="#a3bf8e" stroke-width="1" stroke-linecap="round" fill="none" opacity="0.5"/>
+        <ellipse cx="18" cy="22" rx="3" ry="6" transform="rotate(-30 18 22)" fill="#c8dbb3" opacity="0.5"/>
+        <ellipse cx="30" cy="12" rx="2.5" ry="5" transform="rotate(-20 30 12)" fill="#c8dbb3" opacity="0.4"/>
+      </svg>
+      <svg class="branch branch-bl" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 76C4 76 8 56 20 40C32 24 48 16 56 12" stroke="#7a9a62" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.6"/>
+        <path d="M20 40C20 40 16 32 18 24" stroke="#a3bf8e" stroke-width="1" stroke-linecap="round" fill="none" opacity="0.5"/>
+        <ellipse cx="18" cy="22" rx="3" ry="6" transform="rotate(-30 18 22)" fill="#c8dbb3" opacity="0.4"/>
+      </svg>
+      <svg class="branch branch-br" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 76C4 76 8 56 20 40C32 24 48 16 56 12" stroke="#7a9a62" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.6"/>
+        <path d="M32 28C32 28 28 20 30 12" stroke="#a3bf8e" stroke-width="1" stroke-linecap="round" fill="none" opacity="0.4"/>
+        <ellipse cx="30" cy="12" rx="2.5" ry="5" transform="rotate(-20 30 12)" fill="#c8dbb3" opacity="0.3"/>
+      </svg>
+
+      <label class="input-label">写下你当下的困境</label>
+      <textarea id="userInput" placeholder="在这里，写下困扰你的事情……&#10;不必修饰，不必克制，如实写下即可。"></textarea>
+    </div>
+  </section>
+
+  <div class="btn-area">
+    <button id="dissolveBtn">消 解 困 境</button>
+  </div>
+
+  <div class="waiting" id="waiting">
+    <div class="breath"></div>
+    <p class="hint">正在凝视深渊……</p>
+  </div>
+
+  <div class="error-msg" id="errorMsg"></div>
+
+  <section class="result-section" id="resultSection">
+    <div class="result-card">
+      <span class="tag">专业命名</span>
+      <div class="content" id="resultContent"></div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>命名即消解 — 心理学之银弹</p>
+    <p>叫出魔鬼名字的那一刻，魔鬼就会消解</p>
+  </footer>
+</div>
+
+<script>
+const API_URL = 'https://integrate.api.nvidia.com/v1/chat/completions';
+const API_KEY = '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';
+const MODEL = 'minimaxai/minimax-m2.7';
+
+const userInput = document.getElementById('userInput');
+const dissolveBtn = document.getElementById('dissolveBtn');
+const waiting = document.getElementById('waiting');
+const resultSection = document.getElementById('resultSection');
+const resultContent = document.getElementById('resultContent');
+const errorMsg = document.getElementById('errorMsg');
+
+const waitingHints = [
+  '正在凝视深渊……',
+  '正在辨认魔鬼的真名……',
+  '正在拆解困境的结构……',
+  '正在命名痛苦的本质……',
+  '学术之光照进暗处……',
+];
+
+let hintIndex = 0;
+let hintTimer = null;
+
+function startHintRotation() {
+  const hintEl = waiting.querySelector('.hint');
+  hintIndex = 0;
+  hintTimer = setInterval(() => {
+    hintIndex = (hintIndex + 1) % waitingHints.length;
+    hintEl.style.opacity = '0';
+    setTimeout(() => {
+      hintEl.textContent = waitingHints[hintIndex];
+      hintEl.style.opacity = '';
+    }, 400);
+  }, 4000);
+}
+
+function stopHintRotation() {
+  if (hintTimer) { clearInterval(hintTimer); hintTimer = null; }
+}
+
+function showError(msg) {
+  errorMsg.textContent = msg;
+  errorMsg.classList.add('active');
+  setTimeout(() => errorMsg.classList.remove('active'), 4000);
+}
+
+function renderMarkdown(text) {
+  // 将AI返回的文本做基础排版
+  let html = text
+    // 标题行 (### 或 **加粗标题**)
+    .replace(/^###\s+(.+)/gm, '<h3>$1</h3>')
+    .replace(/^##\s+(.+)/gm, '<h3>$1</h3>')
+    // 加粗
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    // 斜体/下划线术语
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    // 分割线
+    .replace(/^---+$/gm, '<div class="divider"></div>')
+    // 无序列表
+    .replace(/^[•·]\s+(.+)/gm, '<li>$1</li>')
+    .replace(/^-\s+(.+)/gm, '<li>$1</li>')
+    // 编号列表
+    .replace(/^\d+\.\s+(.+)/gm, '<li>$1</li>')
+    // 段落
+    .replace(/\n\n+/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+
+  // 包裹连续的 <li> 为 <ul>
+  html = html.replace(/((?:<li>.*?<\/li>(?:<br>)?)+)/g, '<ul>$1</ul>');
+  html = html.replace(/<ul><br>/g, '<ul>');
+  html = html.replace(/<\/li><br><\/ul>/g, '</li></ul>');
+
+  return '<p>' + html + '</p>';
+}
+
+dissolveBtn.addEventListener('click', async () => {
+  const text = userInput.value.trim();
+  if (!text) {
+    showError('请先写下你当下的困境');
+    userInput.focus();
+    return;
+  }
+
+  dissolveBtn.disabled = true;
+  resultSection.classList.remove('active');
+  waiting.classList.add('active');
+  startHintRotation();
+
+  const prompt = `请你以顶尖学者身份，融合心理学、社会学、存在主义哲学、都市社会学、现代性研究多领域理论，对我当下的处境做专业剖析、精准痛苦命名：
+
+我现状：${text}
+
+要求：
+
+1. 不用安慰、不用鸡汤、不用共情开导；
+2. 只用专业学术术语、理论概念精准定义我的情绪、内耗根源、生存困境；
+3. 从心理学、社会学、哲学、现代都市生存视角分别拆解成因、情绪本质、结构性困境；
+4. 语言克制学术化，只做专业定性与命名，不做情绪安抚。
+
+请用清晰的标题分段输出，每段聚焦一个学科视角。在最开头先用一个精准的学术命名概括我的困境核心。`;
+
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${API_KEY}`
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        messages: [
+          { role: 'system', content: '你是一位融合多学科视角的顶尖学者，专长于以学术语言精准命名和拆解当代人的生存困境。你的文字克制、冷静、专业，不做情绪安抚，只做专业定性。输出使用中文，格式清晰，分学科视角论述。' },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.7,
+        max_tokens: 2048
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`请求失败 (${response.status})`);
+    }
+
+    const data = await response.json();
+    let aiText = '';
+
+    if (data.choices && data.choices.length > 0) {
+      aiText = data.choices[0].message.content.trim();
+    } else {
+      throw new Error('AI 未返回有效内容');
+    }
+
+    // 提取第一个命名行，作为高亮展示
+    const firstLine = aiText.split('\n').find(l => l.trim().length > 0 && !l.startsWith('#')) || '';
+    const namingMatch = firstLine.match(/[【\[](.+?)[】\]]/);
+    const namingText = namingMatch ? namingMatch[1] : '';
+
+    stopHintRotation();
+    waiting.classList.remove('active');
+
+    let htmlContent = '';
+    if (namingText) {
+      htmlContent += `
+        <div class="naming">
+          <div class="label">困 境 命 名</div>
+          <div class="name">${namingText}</div>
+        </div>
+        <div class="divider"></div>
+      `;
+      // 移除原文中已展示的命名行
+      aiText = aiText.replace(firstLine, '').trim();
+    }
+
+    htmlContent += renderMarkdown(aiText);
+    resultContent.innerHTML = htmlContent;
+    resultSection.classList.add('active');
+
+    // 滚动到结果区
+    setTimeout(() => {
+      resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+
+  } catch (err) {
+    stopHintRotation();
+    waiting.classList.remove('active');
+    showError('消解过程出现波折：' + err.message + '，请稍后再试。');
+  } finally {
+    dissolveBtn.disabled = false;
+  }
+});
+
+// 支持 Ctrl+Enter 提交
+userInput.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    dissolveBtn.click();
+  }
+});
+</script>
+
+</body>
+</html>
