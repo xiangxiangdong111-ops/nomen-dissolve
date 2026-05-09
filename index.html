@@ -1732,11 +1732,83 @@ let inputResizeSession = null;
 let pageScrollFrame = null;
 let isSubmitting = false;
 let lastSubmittedSignature = '';
+let hasExplicitLanguageQuery = false;
 
 const INPUT_MIN_HEIGHT = 128;
+const LANGUAGE_STORAGE_KEY = 'nomen-dissolve-language';
 
 function getLocale() {
   return LOCALES[currentLanguage];
+}
+
+function normalizeLanguage(value) {
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  const normalized = value.trim().toLowerCase();
+  if (normalized === 'zh' || normalized.startsWith('zh-')) {
+    return 'zh';
+  }
+
+  if (normalized === 'en' || normalized.startsWith('en-')) {
+    return 'en';
+  }
+
+  return null;
+}
+
+function resolveInitialLanguage() {
+  const url = new URL(window.location.href);
+  const explicitLanguage = normalizeLanguage(url.searchParams.get('lang'));
+  hasExplicitLanguageQuery = Boolean(explicitLanguage);
+  if (explicitLanguage) {
+    return explicitLanguage;
+  }
+
+  const storedLanguage = getStoredLanguagePreference();
+  if (storedLanguage) {
+    return storedLanguage;
+  }
+
+  const browserLanguage = normalizeLanguage(
+    (navigator.languages && navigator.languages[0]) || navigator.language || navigator.userLanguage || 'zh'
+  );
+  return browserLanguage || 'zh';
+}
+
+function getStoredLanguagePreference() {
+  try {
+    return normalizeLanguage(window.localStorage.getItem(LANGUAGE_STORAGE_KEY));
+  } catch {
+    return null;
+  }
+}
+
+function storeLanguagePreference(language) {
+  try {
+    window.localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
+  } catch {
+    // Ignore storage failures.
+  }
+}
+
+function syncLanguageQueryParam() {
+  const url = new URL(window.location.href);
+  hasExplicitLanguageQuery = true;
+
+  if (currentLanguage === 'zh') {
+    url.searchParams.delete('lang');
+  } else {
+    url.searchParams.set('lang', currentLanguage);
+  }
+
+  if (currentLanguage === 'zh') {
+    hasExplicitLanguageQuery = false;
+  }
+
+  const nextUrl = `${url.pathname}${url.search}${url.hash}`;
+  window.history.replaceState(null, '', nextUrl);
 }
 
 function getModelLabel() {
@@ -1903,7 +1975,8 @@ function syncInputDecorationState() {
   syncDissolveButtonState();
 }
 
-function applyLocale() {
+function applyLocale(options = {}) {
+  const { syncUrl = false } = options;
   const locale = getLocale();
   const isExportBusy = exportPdfBtn.disabled;
 
@@ -1936,6 +2009,10 @@ function applyLocale() {
 
   renderThemeOptions();
   syncInputDecorationState();
+
+  if (syncUrl) {
+    syncLanguageQueryParam();
+  }
 }
 
 function syncPageIdleState() {
@@ -2626,7 +2703,8 @@ dissolveBtn.addEventListener('click', async () => {
 
 languageToggle.addEventListener('click', () => {
   currentLanguage = currentLanguage === 'zh' ? 'en' : 'zh';
-  applyLocale();
+  storeLanguagePreference(currentLanguage);
+  applyLocale({ syncUrl: true });
 });
 
 themeToggle.addEventListener('click', () => {
@@ -2671,6 +2749,7 @@ document.addEventListener('pointercancel', stopInputResize);
 
 exportPdfBtn.addEventListener('click', exportResultAsPdf);
 
+currentLanguage = resolveInitialLanguage();
 renderThemeOptions();
 applyBackgroundTheme(activeThemeId);
 applyLocale();

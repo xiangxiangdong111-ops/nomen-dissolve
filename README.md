@@ -12,7 +12,8 @@ English version: see `README.en.md`
 
 在线体验：
 
-- GitHub Pages: https://xiangxiangdong111-ops.github.io/nomen-dissolve/
+- GitHub Pages（默认中文）: https://xiangxiangdong111-ops.github.io/nomen-dissolve/
+- GitHub Pages（英文）: https://xiangxiangdong111-ops.github.io/nomen-dissolve/?lang=en
 - GitHub 仓库: https://github.com/xiangxiangdong111-ops/nomen-dissolve
 
 这个项目想做的事：
