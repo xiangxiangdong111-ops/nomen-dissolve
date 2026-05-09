@@ -5,7 +5,61 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>命名即消解</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap');
+  @font-face {
+    font-family: 'Noto Sans SC';
+    font-style: normal;
+    font-weight: 300;
+    font-display: swap;
+    src: url('./assets/fonts/noto-sans-sc-300.ttf') format('truetype');
+  }
+
+  @font-face {
+    font-family: 'Noto Sans SC';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('./assets/fonts/noto-sans-sc-400.ttf') format('truetype');
+  }
+
+  @font-face {
+    font-family: 'Noto Sans SC';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('./assets/fonts/noto-sans-sc-500.ttf') format('truetype');
+  }
+
+  @font-face {
+    font-family: 'Noto Serif SC';
+    font-style: normal;
+    font-weight: 300;
+    font-display: swap;
+    src: url('./assets/fonts/noto-serif-sc-300.ttf') format('truetype');
+  }
+
+  @font-face {
+    font-family: 'Noto Serif SC';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('./assets/fonts/noto-serif-sc-400.ttf') format('truetype');
+  }
+
+  @font-face {
+    font-family: 'Noto Serif SC';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('./assets/fonts/noto-serif-sc-600.ttf') format('truetype');
+  }
+
+  @font-face {
+    font-family: 'Noto Serif SC';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('./assets/fonts/noto-serif-sc-700.ttf') format('truetype');
+  }
 
   :root {
     --bg: #f7f5f0;
@@ -20,7 +74,7 @@
     --accent: #8b6f4e;
     --card: rgba(255,255,252,0.85);
     --border: #d8d2c6;
-    --bg-image: url('https://images.unsplash.com/photo-1532597668566-591132480e5f?auto=format&fit=crop&w=1800&q=80');
+    --bg-image: url('./assets/backgrounds/quiet-room.jpg');
     --page-scrollbar-thumb: rgba(191, 212, 159, 0.62);
     --page-scrollbar-thumb-hover: rgba(213, 230, 183, 0.8);
     --page-scrollbar-track: rgba(14, 24, 16, 0.42);
@@ -1284,8 +1338,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script>
-const SYSTEM_PROMPT = '你是一位融合多学科视角的顶尖学者。';
-const API_URL = 'http://43.161.214.124:8000/v1/chat/completions';
+const API_URL = 'http://127.0.0.1:8000/v1/dissolve';
 const API_KEY = 'Bearer my-local-proxy-key-1234567890abcdef';
 const MODEL = 'MiniMax-M2.7';
 const MODEL_LABEL = '命名之镜';
@@ -1316,32 +1369,32 @@ const backgroundThemes = [
   {
     id: 'quiet-room',
     name: '静室时光',
-    image: 'https://images.unsplash.com/photo-1532597668566-591132480e5f?auto=format&fit=crop&w=1800&q=80',
+    image: './assets/backgrounds/quiet-room.jpg',
   },
   {
     id: 'forest-stream',
     name: '林间溪流',
-    image: 'https://images.unsplash.com/photo-1602836947073-00b7724b76eb?auto=format&fit=crop&w=1800&q=80',
+    image: './assets/backgrounds/forest-stream.jpg',
   },
   {
     id: 'misty-lake',
     name: '雾隐湖畔',
-    image: 'https://images.unsplash.com/photo-1774799560672-151b971fd336?auto=format&fit=crop&w=1800&q=80',
+    image: './assets/backgrounds/misty-lake.jpg',
   },
   {
     id: 'moon-sea',
     name: '月下海崖',
-    image: 'https://images.unsplash.com/photo-1634314559948-f5a2b7a72e1c?auto=format&fit=crop&w=1800&q=80',
+    image: './assets/backgrounds/moon-sea.jpg',
   },
   {
     id: 'forest-light',
     name: '光影森林',
-    image: 'https://images.unsplash.com/photo-1593487063062-e6aa56fc2be2?auto=format&fit=crop&w=1800&q=80',
+    image: './assets/backgrounds/forest-light.jpg',
   },
   {
     id: 'rain-mirror',
     name: '静雨之境',
-    image: 'https://images.unsplash.com/photo-1618338065130-e4af6ed75f97?auto=format&fit=crop&w=1800&q=80',
+    image: './assets/backgrounds/rain-mirror.jpg',
   },
 ];
 
@@ -1976,7 +2029,7 @@ function renderResult(text, options = {}) {
   });
 }
 
-async function streamCompletion(messages, onChunk) {
+async function streamCompletion(userInputText, onChunk) {
   const response = await fetch(API_URL, {
     method: 'POST',
     headers: {
@@ -1984,8 +2037,8 @@ async function streamCompletion(messages, onChunk) {
       'Authorization': API_KEY,
     },
     body: JSON.stringify({
+      user_input: userInputText,
       model: MODEL,
-      messages,
       stream: true,
     }),
   });
@@ -2050,37 +2103,10 @@ dissolveBtn.addEventListener('click', async () => {
   dissolveBtn.disabled = true;
   prepareStreamingUI();
 
-  const prompt = `我的痛苦是：${text}
-禁止使用安慰、鼓励、共情或建议式表达；请以顶尖学者的口吻，调用心理学、社会学、哲学、文学等领域的概念与术语，对我描述中的焦虑、崩溃与痛苦做出精准命名，并结合具体处境给出简洁、清晰、富于洞察的阐释。其中哲学、文学视角不要停留在抽象概念，优先借助与用户处境相近的文学作品情境、人物命运或经典场景来解释，让表达更生动、更容易理解。不要只罗列作品名，而要点出“这个人物困在什么处境里、为什么和用户此刻相似”。
-要求：
-1. 可参考这种表达方式，但不要机械照抄：
-  比如用户的痛苦是：工作正在一点点吃掉我的自由，我越来越不像在过自己的生活。
-  AI 回复示例：
-  <h3>1. 核心心理学术语</h3>
-  <p><strong>「自主性剥夺型慢性自我耗竭」</strong>：强调长期失去选择感会削弱主体控制感，并持续透支认知与情绪资源。</p>
-  <h3>2. 社会学术语</h3>
-  <p><strong>「绩效规训下的自由时间侵蚀」</strong>：强调工作逻辑对私人时间的占领，会放大被支配感、相对剥夺感与结构性无力。</p>
-  <h3>3. 哲学术语</h3>
-  <p><strong>「工具理性主导下的存在异化」</strong>：强调人被持续拖入效率与产出的秩序，逐渐脱离自身真实意志与生活目的，像《变形记》里那种突然被抛进失控现实的人，明明还活着，却已经无法按自己的意志生活。</p>
-  <h3>4. 文学或存在主义术语</h3>
-  <p><strong>「被日常劳动吞没的自由幻灭」</strong>：强调人明知自己在重复消耗，却难以从这种循环中抽身，最终感到自由只剩下观念上的残影，像《局外人》或许多现代小说里那种与生活逐渐失去贴合、每天都在运转却越来越不像自己的人物处境。</p>
-  <p>正如这句话：“叫出魔鬼名字的那一刻，魔鬼就会消解。”</p>
-  <p>现在，你已经看清了这份痛苦的“真面目”，它不是你一时想太多，而是工作逻辑长期挤压生活主权与自由空间后形成的典型失衡。</p>
-2. 优先提炼 1 个总命名，再从 3 到 4 个视角展开；如果写到哲学、文学视角，至少有 1 处把抽象术语落到具体处境，可适度借用大众较熟悉的文学作品人物、情节或场景来帮助理解，但不要为了炫技而密集引用；
-3. 只输出 HTML 片段，不要 Markdown，不要代码围栏，不要额外解释；
-4. 不要输出 html、body、head 标签；
-5. 标题必须使用 <h3>，重点术语必须使用 <strong>，正文解释必须使用 <p>；
-6. 结尾必须再用 1 到 2 个 <p> 做收束总结，口吻要像“看清真面目”后的睿智判断，并结合用户的具体处境，点明这份痛苦背后的核心失衡、结构性压力、关系张力或存在性困局，但不要把结论写死成固定句式。`;
-
   try {
     startHintRotation();
 
-    const messages = [
-      { role: 'system', content: SYSTEM_PROMPT },
-      { role: 'user', content: prompt }
-    ];
-
-    const aiText = await streamCompletion(messages, handleStreamChunk);
+    const aiText = await streamCompletion(text, handleStreamChunk);
     handleStreamComplete(aiText);
 
   } catch (err) {
