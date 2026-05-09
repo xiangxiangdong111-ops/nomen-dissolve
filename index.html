@@ -233,8 +233,9 @@
     position: fixed;
     top: 22px;
     right: 78px;
+    width: 44px;
     height: 44px;
-    padding: 0 16px;
+    padding: 0;
     border: 1px solid rgba(225, 233, 207, 0.42);
     border-radius: 14px;
     background: rgba(248, 250, 242, 0.12);
@@ -244,7 +245,7 @@
     box-shadow: 0 16px 34px rgba(7, 14, 8, 0.22);
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    justify-content: center;
     z-index: 30;
     transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
   }
@@ -1240,10 +1241,10 @@
     .repo-link {
       top: 16px;
       right: 64px;
+      width: 40px;
       height: 40px;
-      padding: 0 12px;
+      padding: 0;
       border-radius: 12px;
-      gap: 8px;
     }
 
     .repo-link-label {
@@ -1736,6 +1737,10 @@ let hasExplicitLanguageQuery = false;
 
 const INPUT_MIN_HEIGHT = 128;
 const LANGUAGE_STORAGE_KEY = 'nomen-dissolve-language';
+const REPO_README_LINKS = {
+  zh: 'https://github.com/xiangxiangdong111-ops/nomen-dissolve/blob/main/README.md',
+  en: 'https://github.com/xiangxiangdong111-ops/nomen-dissolve/blob/main/README.en.md',
+};
 
 function getLocale() {
   return LOCALES[currentLanguage];
@@ -1813,6 +1818,10 @@ function syncLanguageQueryParam() {
 
 function getModelLabel() {
   return getLocale().modelLabel;
+}
+
+function getRepoLinkHref() {
+  return REPO_README_LINKS[currentLanguage] || REPO_README_LINKS.zh;
 }
 
 function getDefaultResultTag() {
@@ -2000,6 +2009,7 @@ function applyLocale(options = {}) {
   footerFocusText.textContent = locale.footerFocusText;
   themeToggle.setAttribute('aria-label', locale.themeToggleAria);
   themeClose.setAttribute('aria-label', locale.themeCloseAria);
+  repoLink.href = getRepoLinkHref();
   repoLink.setAttribute('aria-label', locale.repoLinkAria);
   inputResizeHandle.setAttribute('aria-label', locale.inputResizeAria);
   languageToggle.setAttribute('aria-label', locale.switchLanguageAria);
