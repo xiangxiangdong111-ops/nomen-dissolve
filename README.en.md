@@ -12,6 +12,7 @@ This project is not trying to hand out perfect answers. It is trying to help peo
 
 Live links:
 
+- Access node (Vercel): https://nomen-dissolve.vercel.app/
 - GitHub Pages (default Chinese): https://xiangxiangdong111-ops.github.io/nomen-dissolve/
 - GitHub Pages (English): https://xiangxiangdong111-ops.github.io/nomen-dissolve/?lang=en
 - GitHub Repository: https://github.com/xiangxiangdong111-ops/nomen-dissolve
