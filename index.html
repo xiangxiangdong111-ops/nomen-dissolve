@@ -281,6 +281,63 @@
     white-space: nowrap;
   }
 
+  .lang-toggle {
+    position: fixed;
+    top: 22px;
+    right: 138px;
+    height: 44px;
+    padding: 4px;
+    border: 1px solid rgba(225, 233, 207, 0.42);
+    border-radius: 14px;
+    background: rgba(248, 250, 242, 0.12);
+    color: rgba(239, 243, 231, 0.96);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 16px 34px rgba(7, 14, 8, 0.22);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    z-index: 30;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+  }
+
+  .lang-toggle:hover {
+    transform: translateY(-1px);
+    border-color: rgba(233, 239, 220, 0.7);
+    background: rgba(248, 250, 242, 0.18);
+    box-shadow: 0 20px 38px rgba(7, 14, 8, 0.26);
+  }
+
+  .lang-toggle::after {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.08);
+    pointer-events: none;
+  }
+
+  .lang-toggle-option {
+    min-width: 28px;
+    height: 32px;
+    padding: 0 10px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+    color: rgba(239, 243, 231, 0.76);
+    transition: background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .lang-toggle-option.is-active {
+    background: linear-gradient(180deg, rgba(241, 247, 225, 0.26), rgba(208, 222, 176, 0.18));
+    color: rgba(247, 250, 239, 0.98);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.16);
+  }
+
   .theme-backdrop {
     position: fixed;
     inset: 0;
@@ -656,9 +713,11 @@
 
   #dissolveBtn:disabled {
     background: rgba(184, 191, 173, 0.72);
-    cursor: not-allowed;
+    color: rgba(51, 65, 45, 0.72);
+    cursor: default;
     transform: none;
     box-shadow: none;
+    filter: saturate(0.82);
   }
 
   .btn-note {
@@ -942,8 +1001,6 @@
 
   .result-card .content-viewport.is-streaming {
     overflow: hidden;
-    transition: max-height 420ms linear;
-    will-change: max-height;
     -webkit-mask-image: linear-gradient(
       180deg,
       rgba(0, 0, 0, 1) 0%,
@@ -1048,13 +1105,13 @@
   .footer {
     margin-top: 0;
     padding-top: 0;
-    width: min(1200px, calc(100vw - 96px));
+    width: min(1320px, calc(100vw - 72px));
     position: relative;
     left: 50%;
     transform: translateX(-50%);
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 28px;
+    grid-template-columns: minmax(260px, 1fr) minmax(320px, auto) minmax(260px, 1fr);
+    gap: 24px;
     align-items: end;
     justify-items: center;
     transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s ease;
@@ -1078,6 +1135,7 @@
   .footer-center {
     text-align: center;
     justify-self: center;
+    max-width: 380px;
   }
 
   .footer-side {
@@ -1085,7 +1143,8 @@
     align-items: center;
     gap: 12px;
     padding: 0;
-    max-width: 220px;
+    max-width: 300px;
+    width: min(100%, 300px);
     justify-self: center;
   }
 
@@ -1191,6 +1250,23 @@
       font-size: 13px;
     }
 
+    .lang-toggle {
+      top: 16px;
+      right: 112px;
+      height: 40px;
+      border-radius: 12px;
+      padding: 3px;
+      gap: 3px;
+    }
+
+    .lang-toggle-option {
+      min-width: 24px;
+      height: 30px;
+      padding: 0 8px;
+      border-radius: 9px;
+      font-size: 12px;
+    }
+
     .theme-drawer {
       width: min(100vw, 320px);
       padding: 18px 12px 20px;
@@ -1279,7 +1355,12 @@
 </head>
 <body class="page-idle">
 
-<a class="repo-link" href="https://github.com/xiangxiangdong111-ops/nomen-dissolve" target="_blank" rel="noreferrer" aria-label="打开 GitHub 仓库">
+<button class="lang-toggle" id="languageToggle" type="button" aria-label="切换到英文">
+  <span class="lang-toggle-option is-active" id="langOptionZh">中</span>
+  <span class="lang-toggle-option" id="langOptionEn">EN</span>
+</button>
+
+<a class="repo-link" id="repoLink" href="https://github.com/xiangxiangdong111-ops/nomen-dissolve" target="_blank" rel="noreferrer" aria-label="打开 GitHub 仓库">
   <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <path d="M12 2C6.48 2 2 6.58 2 12.23C2 16.75 4.87 20.58 8.84 21.93C9.34 22.03 9.52 21.71 9.52 21.43C9.52 21.18 9.51 20.34 9.5 19.23C6.73 19.85 6.14 18.02 6.14 18.02C5.68 16.81 5.03 16.49 5.03 16.49C4.12 15.85 5.1 15.86 5.1 15.86C6.1 15.94 6.63 16.92 6.63 16.92C7.52 18.49 8.97 18.04 9.54 17.78C9.63 17.11 9.89 16.66 10.18 16.4C7.97 16.14 5.65 15.26 5.65 11.34C5.65 10.22 6.04 9.3 6.68 8.58C6.58 8.33 6.24 7.28 6.78 5.86C6.78 5.86 7.62 5.58 9.49 6.89C10.29 6.66 11.15 6.54 12 6.54C12.85 6.54 13.71 6.66 14.51 6.89C16.38 5.58 17.22 5.86 17.22 5.86C17.76 7.28 17.42 8.33 17.32 8.58C17.96 9.3 18.35 10.22 18.35 11.34C18.35 15.27 16.02 16.14 13.8 16.39C14.16 16.71 14.48 17.33 14.48 18.27C14.48 19.62 14.47 20.99 14.47 21.43C14.47 21.71 14.65 22.04 15.16 21.93C19.13 20.58 22 16.75 22 12.23C22 6.58 17.52 2 12 2Z"/>
   </svg>
@@ -1298,7 +1379,7 @@
 
 <aside class="theme-drawer" id="themeDrawer" aria-hidden="true">
   <div class="theme-drawer-header">
-    <div class="theme-drawer-title">选择一个让你感到舒适的氛围</div>
+    <div class="theme-drawer-title" id="themeDrawerTitle">选择一个让你感到舒适的氛围</div>
     <button class="theme-drawer-close" id="themeClose" type="button" aria-label="关闭背景主题抽屉">
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <path d="M7 7L17 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -1319,8 +1400,8 @@
       <path d="M24 30C24 30 20 34 18 38" stroke="#a3bf8e" stroke-width="1.7" stroke-linecap="round"/>
       <circle cx="24" cy="24" r="2" fill="#5a7247" opacity="0.5"/>
     </svg>
-    <h1>命名即消解</h1>
-    <p class="subtitle">叫出魔鬼名字的那一刻，魔鬼就会消解</p>
+    <h1 id="headerTitle">命名即消解</h1>
+    <p class="subtitle" id="headerSubtitle">叫出魔鬼名字的那一刻，魔鬼就会消解</p>
   </header>
 
   <section class="input-section">
@@ -1353,7 +1434,7 @@
         <ellipse cx="30" cy="12" rx="2.5" ry="5" transform="rotate(-20 30 12)" fill="#c8dbb3" opacity="0.3"/>
       </svg>
 
-      <label class="input-label">写下你当下的困境</label>
+      <label class="input-label" id="inputLabel">写下你当下的困境</label>
       <textarea id="userInput" placeholder="在这里，写下困扰你的事情……&#10;不必修饰，不必克制，如实写下即可。"></textarea>
       <button class="input-resize-handle" id="inputResizeHandle" type="button" aria-label="拖拽调整输入框高度">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -1368,8 +1449,8 @@
   </section>
 
   <div class="btn-area">
-    <button id="dissolveBtn">消 解 困 境</button>
-    <p class="btn-note">你的每一次表达，都是走向消解的开始</p>
+    <button id="dissolveBtn" disabled>消 解 困 境</button>
+    <p class="btn-note" id="btnNote">你的每一次表达，都是走向消解的开始</p>
   </div>
 
   <div class="section-divider" aria-hidden="true">
@@ -1382,7 +1463,7 @@
 
   <div class="waiting" id="waiting">
     <div class="breath"></div>
-    <p class="hint">正在凝视深渊……</p>
+    <p class="hint" id="waitingHint">正在凝视深渊……</p>
   </div>
 
   <div class="error-msg" id="errorMsg"></div>
@@ -1398,7 +1479,7 @@
             <path d="M8.5 10.8L12 14.4L15.5 10.8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M6 18.2H18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
           </svg>
-          <span>保存 PDF</span>
+          <span id="exportPdfText">保存 PDF</span>
         </button>
         <span class="tag" id="resultTag">
           <span class="tag-ornament is-left" aria-hidden="true">
@@ -1434,13 +1515,13 @@
         <path d="M9.5 11.5L11.2 13.2L14.8 9.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
       <div>
-        <span class="footer-side-title">隐 私 守 护</span>
-        <div class="footer-side-text">你的表达只属于你自己</div>
+        <span class="footer-side-title" id="footerPrivacyTitle">隐 私 守 护</span>
+        <div class="footer-side-text" id="footerPrivacyText">你的表达只属于你自己</div>
       </div>
     </div>
     <div class="footer-center">
-      <p>命名即消解 — 心理学之银弹</p>
-      <p>叫出魔鬼名字的那一刻，魔鬼就会消解</p>
+      <p id="footerCenterTop">命名即消解 — 心理学之银弹</p>
+      <p id="footerCenterBottom">叫出魔鬼名字的那一刻，魔鬼就会消解</p>
     </div>
     <div class="footer-side right">
       <svg class="footer-side-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -1448,8 +1529,8 @@
         <path d="M12 7.8V12.4L15 14.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
       <div>
-        <span class="footer-side-title">专 注 当 下</span>
-        <div class="footer-side-text">专注于此刻的真实感受</div>
+        <span class="footer-side-title" id="footerFocusTitle">专 注 当 下</span>
+        <div class="footer-side-text" id="footerFocusText">专注于此刻的真实感受</div>
       </div>
     </div>
   </footer>
@@ -1458,11 +1539,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script>
-const API_URL = 'https://doctrans.pro/v1/dissolve';
+const API_URL = 'http://127.0.0.1:8000/v1/dissolve';
+// const API_URL = 'https://doctrans.pro/v1/dissolve';
 const API_KEY = 'Bearer my-local-proxy-key-1234567890abcdef';
 const MODEL = 'MiniMax-M2.7';
-const MODEL_LABEL = '命名之镜';
-const DEFAULT_RESULT_TAG = '命名之境';
 
 const userInput = document.getElementById('userInput');
 const inputResizeHandle = document.getElementById('inputResizeHandle');
@@ -1480,66 +1560,166 @@ const resultTagLabel = document.getElementById('resultTagLabel');
 const resultShell = document.querySelector('.result-shell');
 const exportPdfBtn = document.getElementById('exportPdfBtn');
 const footer = document.querySelector('.footer');
+const languageToggle = document.getElementById('languageToggle');
+const langOptionZh = document.getElementById('langOptionZh');
+const langOptionEn = document.getElementById('langOptionEn');
+const repoLink = document.getElementById('repoLink');
 const themeToggle = document.getElementById('themeToggle');
 const themeDrawer = document.getElementById('themeDrawer');
 const themeBackdrop = document.getElementById('themeBackdrop');
 const themeClose = document.getElementById('themeClose');
 const themeGrid = document.getElementById('themeGrid');
+const themeDrawerTitle = document.getElementById('themeDrawerTitle');
+const headerTitle = document.getElementById('headerTitle');
+const headerSubtitle = document.getElementById('headerSubtitle');
+const inputLabel = document.getElementById('inputLabel');
+const btnNote = document.getElementById('btnNote');
+const waitingHint = document.getElementById('waitingHint');
+const exportPdfText = document.getElementById('exportPdfText');
+const footerPrivacyTitle = document.getElementById('footerPrivacyTitle');
+const footerPrivacyText = document.getElementById('footerPrivacyText');
+const footerCenterTop = document.getElementById('footerCenterTop');
+const footerCenterBottom = document.getElementById('footerCenterBottom');
+const footerFocusTitle = document.getElementById('footerFocusTitle');
+const footerFocusText = document.getElementById('footerFocusText');
 
 const backgroundThemes = [
   {
     id: 'quiet-room',
-    name: '静室时光',
+    label: { zh: '静室时光', en: 'Quiet Room' },
     image: './assets/backgrounds/quiet-room.jpg',
   },
   {
     id: 'forest-stream',
-    name: '林间溪流',
+    label: { zh: '林间溪流', en: 'Forest Stream' },
     image: './assets/backgrounds/forest-stream.jpg',
   },
   {
     id: 'misty-lake',
-    name: '雾隐湖畔',
+    label: { zh: '雾隐湖畔', en: 'Misty Lake' },
     image: './assets/backgrounds/misty-lake.jpg',
   },
   {
     id: 'moon-sea',
-    name: '月下海崖',
+    label: { zh: '月下海崖', en: 'Moonlit Cliffs' },
     image: './assets/backgrounds/moon-sea.jpg',
   },
   {
     id: 'forest-light',
-    name: '光影森林',
+    label: { zh: '光影森林', en: 'Forest Light' },
     image: './assets/backgrounds/forest-light.jpg',
   },
   {
     id: 'rain-mirror',
-    name: '静雨之境',
+    label: { zh: '静雨之境', en: 'Rain Mirror' },
     image: './assets/backgrounds/rain-mirror.jpg',
   },
 ];
 
+const LOCALES = {
+  zh: {
+    htmlLang: 'zh-CN',
+    title: '命名即消解',
+    headerTitle: '命名即消解',
+    headerSubtitle: '叫出魔鬼名字的那一刻，魔鬼就会消解',
+    inputLabel: '写下你当下的困境',
+    inputPlaceholder: '在这里，写下困扰你的事情……\n不必修饰，不必克制，如实写下即可。',
+    dissolveButton: '消 解 困 境',
+    buttonNote: '你的每一次表达，都是走向消解的开始',
+    themeDrawerTitle: '选择一个让你感到舒适的氛围',
+    waitingHints: [
+      '正在凝视深渊……',
+      '正在辨认魔鬼的真名……',
+      '正在拆解困境的结构……',
+      '正在命名痛苦的本质……',
+      '学术之光照进暗处……',
+    ],
+    modelLabel: '命名之镜',
+    defaultResultTag: '命名之境',
+    exportPdf: '保存 PDF',
+    exportingPdf: '导出中...',
+    exportPdfAria: '导出当前 AI 回复为 PDF',
+    footerPrivacyTitle: '隐 私 守 护',
+    footerPrivacyText: '你的表达只属于你自己',
+    footerCenterTop: '命名即消解 — 心理学之银弹',
+    footerCenterBottom: '叫出魔鬼名字的那一刻，魔鬼就会消解',
+    footerFocusTitle: '专 注 当 下',
+    footerFocusText: '专注于此刻的真实感受',
+    themeToggleAria: '打开背景主题抽屉',
+    themeCloseAria: '关闭背景主题抽屉',
+    repoLinkAria: '打开 GitHub 仓库',
+    inputResizeAria: '拖拽调整输入框高度',
+    switchLanguageAria: '切换到英文',
+    pdfFilenamePrefix: '命名即消解',
+    themeAriaPrefix: '切换到',
+    themeAriaSuffix: '背景',
+    errors: {
+      emptyInput: '请先写下你当下的困境',
+      streamFailedPrefix: '消解过程出现波折：',
+      tryAgain: '，请稍后再试。',
+      exportNoResult: '请先生成一条 AI 回复，再导出 PDF',
+      exportComponentFailed: 'PDF 导出组件加载失败，请稍后再试',
+      exportFailedPrefix: '导出 PDF 失败：',
+    },
+  },
+  en: {
+    htmlLang: 'en',
+    title: 'Name It, Dissolve It',
+    headerTitle: 'Name It, Dissolve It',
+    headerSubtitle: 'The moment you name the demon, it begins to dissolve.',
+    inputLabel: 'Write down the difficulty you are facing',
+    inputPlaceholder: 'Write what is troubling you here...\nNo need to polish it. No need to hold back. Just write it as it is.',
+    dissolveButton: 'DISSOLVE IT',
+    buttonNote: 'Each time you put it into words, dissolution begins.',
+    themeDrawerTitle: 'Choose an atmosphere that feels safe for you',
+    waitingHints: [
+      'Gazing into the abyss...',
+      'Tracing the demon\'s true name...',
+      'Mapping the structure of your difficulty...',
+      'Naming the essence of the pain...',
+      'Letting scholarship cast light into the dark...',
+    ],
+    modelLabel: 'Naming Lens',
+    defaultResultTag: 'Naming Insight',
+    exportPdf: 'Save PDF',
+    exportingPdf: 'Exporting...',
+    exportPdfAria: 'Export the current AI reply as PDF',
+    footerPrivacyTitle: 'PRIVACY SHELTER',
+    footerPrivacyText: 'What you express belongs only to you.',
+    footerCenterTop: 'Name It, Dissolve It — Psychology\'s Silver Bullet',
+    footerCenterBottom: 'The moment you name the demon, it begins to dissolve.',
+    footerFocusTitle: 'STAY PRESENT',
+    footerFocusText: 'Stay with what you truly feel right now.',
+    themeToggleAria: 'Open background theme drawer',
+    themeCloseAria: 'Close background theme drawer',
+    repoLinkAria: 'Open GitHub repository',
+    inputResizeAria: 'Drag to resize the input area',
+    switchLanguageAria: 'Switch to Chinese',
+    pdfFilenamePrefix: 'name-it-dissolve-it',
+    themeAriaPrefix: 'Switch to ',
+    themeAriaSuffix: ' background',
+    errors: {
+      emptyInput: 'Please write down what is troubling you first.',
+      streamFailedPrefix: 'The dissolve process hit a snag: ',
+      tryAgain: ' Please try again in a moment.',
+      exportNoResult: 'Generate an AI reply first, then export the PDF.',
+      exportComponentFailed: 'The PDF export library failed to load. Please try again later.',
+      exportFailedPrefix: 'PDF export failed: ',
+    },
+  },
+};
+
 let activeThemeId = backgroundThemes[0].id;
+let currentLanguage = 'zh';
 const STREAM_VISIBLE_CHARS_PER_SECOND = 30;
 const STREAM_MAX_VISIBLE_CHARS_PER_FRAME = 1;
-const STREAM_FOLLOW_STEP_FACTOR = 0.16;
-const STREAM_FOLLOW_MAX_STEP = 26;
-const STREAM_FOLLOW_MIN_STEP = 2;
+const PAGE_SCROLL_DEFAULT_DURATION = 1150;
+const PAGE_SCROLL_SHORT_DURATION = 880;
 const PDF_EXPORT_RENDER_SCALE = Math.min(Math.max(window.devicePixelRatio || 1, 3), 4);
-
-const waitingHints = [
-  '正在凝视深渊……',
-  '正在辨认魔鬼的真名……',
-  '正在拆解困境的结构……',
-  '正在命名痛苦的本质……',
-  '学术之光照进暗处……',
-];
 
 let hintIndex = 0;
 let hintTimer = null;
 let revealResetTimer = null;
-let streamFollowFrame = null;
-let streamFollowUntil = 0;
 let streamReleaseFrame = null;
 let waitingScrollTimer = null;
 let incomingStreamText = '';
@@ -1547,9 +1727,80 @@ let revealedStreamIndex = 0;
 let streamReleaseCarry = 0;
 let streamReleaseLastTime = 0;
 let streamNetworkDone = false;
+let streamingViewportLockedHeight = 0;
 let inputResizeSession = null;
+let pageScrollFrame = null;
+let isSubmitting = false;
+let lastSubmittedSignature = '';
 
 const INPUT_MIN_HEIGHT = 128;
+
+function getLocale() {
+  return LOCALES[currentLanguage];
+}
+
+function getModelLabel() {
+  return getLocale().modelLabel;
+}
+
+function getDefaultResultTag() {
+  return getLocale().defaultResultTag;
+}
+
+function getNormalizedUserInput() {
+  return userInput.value.trim();
+}
+
+function getSubmissionSignature() {
+  return `${currentLanguage}::${getNormalizedUserInput()}`;
+}
+
+function easeInOutCubic(progress) {
+  return progress < 0.5
+    ? 4 * progress * progress * progress
+    : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+}
+
+function clampScrollTop(top) {
+  const maxTop = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+  return Math.min(Math.max(0, top), maxTop);
+}
+
+function stopPageScrollAnimation() {
+  if (pageScrollFrame) {
+    cancelAnimationFrame(pageScrollFrame);
+    pageScrollFrame = null;
+  }
+}
+
+function smoothWindowScrollTo(targetTop, duration = PAGE_SCROLL_DEFAULT_DURATION) {
+  const startTop = window.scrollY;
+  const endTop = clampScrollTop(targetTop);
+  const distance = endTop - startTop;
+
+  stopPageScrollAnimation();
+
+  if (Math.abs(distance) < 1) {
+    window.scrollTo(0, endTop);
+    return;
+  }
+
+  const startTime = performance.now();
+
+  const step = (now) => {
+    const progress = Math.min(1, (now - startTime) / duration);
+    const easedProgress = easeInOutCubic(progress);
+    window.scrollTo(0, startTop + distance * easedProgress);
+
+    if (progress < 1) {
+      pageScrollFrame = requestAnimationFrame(step);
+    } else {
+      pageScrollFrame = null;
+    }
+  };
+
+  pageScrollFrame = requestAnimationFrame(step);
+}
 
 function isCompactViewport() {
   return window.matchMedia('(max-width: 640px)').matches;
@@ -1565,13 +1816,12 @@ function scrollWaitingIntoPrimaryView() {
   }
 
   const targetTop = Math.max(0, window.scrollY + sectionDivider.getBoundingClientRect().top - getWaitingViewportOffset());
-  window.scrollTo({ top: targetTop, behavior: 'smooth' });
+  smoothWindowScrollTo(targetTop);
 }
 
 function scheduleWaitingViewportFocus() {
-  if (isCompactViewport()) {
-    userInput.blur();
-  }
+  userInput.blur();
+
 
   if (waitingScrollTimer) {
     clearTimeout(waitingScrollTimer);
@@ -1620,18 +1870,19 @@ function startInputResize(event) {
 
 function startHintRotation() {
   const hintEl = waiting.querySelector('.hint');
+  const waitingHints = getLocale().waitingHints;
   if (hintTimer) {
     clearInterval(hintTimer);
     hintTimer = null;
   }
 
   hintIndex = 0;
-  hintEl.textContent = `${MODEL_LABEL} · ${waitingHints[hintIndex]}`;
+  hintEl.textContent = `${getModelLabel()} · ${waitingHints[hintIndex]}`;
   hintTimer = setInterval(() => {
     hintIndex = (hintIndex + 1) % waitingHints.length;
     hintEl.style.opacity = '0';
     setTimeout(() => {
-      hintEl.textContent = `${MODEL_LABEL} · ${waitingHints[hintIndex]}`;
+      hintEl.textContent = `${getModelLabel()} · ${waitingHints[hintIndex]}`;
       hintEl.style.opacity = '';
     }, 400);
   }, 4000);
@@ -1641,8 +1892,50 @@ function stopHintRotation() {
   if (hintTimer) { clearInterval(hintTimer); hintTimer = null; }
 }
 
+function syncDissolveButtonState() {
+  const currentInput = getNormalizedUserInput();
+  const currentSignature = getSubmissionSignature();
+  dissolveBtn.disabled = isSubmitting || !currentInput || currentSignature === lastSubmittedSignature;
+}
+
 function syncInputDecorationState() {
-  inputWrapper.classList.toggle('has-content', userInput.value.trim().length > 0);
+  inputWrapper.classList.toggle('has-content', getNormalizedUserInput().length > 0);
+  syncDissolveButtonState();
+}
+
+function applyLocale() {
+  const locale = getLocale();
+  const isExportBusy = exportPdfBtn.disabled;
+
+  document.documentElement.lang = locale.htmlLang;
+  document.title = locale.title;
+  headerTitle.textContent = locale.headerTitle;
+  headerSubtitle.textContent = locale.headerSubtitle;
+  inputLabel.textContent = locale.inputLabel;
+  userInput.placeholder = locale.inputPlaceholder;
+  dissolveBtn.textContent = locale.dissolveButton;
+  btnNote.textContent = locale.buttonNote;
+  waitingHint.textContent = locale.waitingHints[Math.min(hintIndex, locale.waitingHints.length - 1)];
+  themeDrawerTitle.textContent = locale.themeDrawerTitle;
+  exportPdfText.textContent = isExportBusy ? locale.exportingPdf : locale.exportPdf;
+  exportPdfBtn.setAttribute('aria-label', locale.exportPdfAria);
+  footerPrivacyTitle.textContent = locale.footerPrivacyTitle;
+  footerPrivacyText.textContent = locale.footerPrivacyText;
+  footerCenterTop.textContent = locale.footerCenterTop;
+  footerCenterBottom.textContent = locale.footerCenterBottom;
+  footerFocusTitle.textContent = locale.footerFocusTitle;
+  footerFocusText.textContent = locale.footerFocusText;
+  themeToggle.setAttribute('aria-label', locale.themeToggleAria);
+  themeClose.setAttribute('aria-label', locale.themeCloseAria);
+  repoLink.setAttribute('aria-label', locale.repoLinkAria);
+  inputResizeHandle.setAttribute('aria-label', locale.inputResizeAria);
+  languageToggle.setAttribute('aria-label', locale.switchLanguageAria);
+  resultTagLabel.textContent = locale.defaultResultTag;
+  langOptionZh.classList.toggle('is-active', currentLanguage === 'zh');
+  langOptionEn.classList.toggle('is-active', currentLanguage === 'en');
+
+  renderThemeOptions();
+  syncInputDecorationState();
 }
 
 function syncPageIdleState() {
@@ -1661,48 +1954,22 @@ function setExportButtonVisibility(isVisible) {
   exportPdfBtn.setAttribute('aria-hidden', String(!isVisible));
 }
 
-function stopStreamingViewportFollow() {
-  if (streamFollowFrame) {
-    cancelAnimationFrame(streamFollowFrame);
-    streamFollowFrame = null;
-  }
-}
-
-function startStreamingViewportFollow(duration = 720) {
-  streamFollowUntil = performance.now() + duration;
-  if (streamFollowFrame) {
-    return;
-  }
-
-  const step = (now) => {
-    const rect = resultStreamTail.getBoundingClientRect();
-    const desiredBottom = Math.min(window.innerHeight - 88, window.innerHeight * 0.82);
-    const delta = rect.bottom - desiredBottom;
-
-    if (Math.abs(delta) > 1) {
-      const stepSize = Math.sign(delta) * Math.min(
-        STREAM_FOLLOW_MAX_STEP,
-        Math.max(STREAM_FOLLOW_MIN_STEP, Math.abs(delta) * STREAM_FOLLOW_STEP_FACTOR)
-      );
-
-      window.scrollTo({
-        top: window.scrollY + stepSize,
-        behavior: 'auto',
-      });
-    }
-
-    if (now < streamFollowUntil || Math.abs(delta) > 1) {
-      streamFollowFrame = requestAnimationFrame(step);
-    } else {
-      streamFollowFrame = null;
-    }
-  };
-
-  streamFollowFrame = requestAnimationFrame(step);
-}
-
 function scrollResultIntoPrimaryView() {
-  resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const targetTop = window.scrollY + resultSection.getBoundingClientRect().top - 24;
+  smoothWindowScrollTo(targetTop, PAGE_SCROLL_SHORT_DURATION);
+}
+
+function getStreamingViewportLockedHeight() {
+  if (streamingViewportLockedHeight > 0) {
+    return streamingViewportLockedHeight;
+  }
+
+  const viewportRect = resultContentViewport.getBoundingClientRect();
+  const bottomInset = isCompactViewport() ? 104 : 132;
+  const availableHeight = window.innerHeight - viewportRect.top - bottomInset;
+
+  streamingViewportLockedHeight = Math.max(220, Math.min(Math.round(availableHeight), 420));
+  return streamingViewportLockedHeight;
 }
 
 function resetStreamRenderState() {
@@ -1714,12 +1981,12 @@ function resetStreamRenderState() {
     clearTimeout(revealResetTimer);
     revealResetTimer = null;
   }
-  stopStreamingViewportFollow();
   incomingStreamText = '';
   revealedStreamIndex = 0;
   streamReleaseCarry = 0;
   streamReleaseLastTime = 0;
   streamNetworkDone = false;
+  streamingViewportLockedHeight = 0;
 }
 
 function applyStreamingRevealState(isStreaming) {
@@ -1729,16 +1996,31 @@ function applyStreamingRevealState(isStreaming) {
 }
 
 function syncRevealViewport(targetHeight, options = {}) {
-  const { immediate = false, release = false } = options;
+  const { immediate = false, release = false, forceStreaming = false } = options;
+  const isStreaming = (forceStreaming || resultContentViewport.classList.contains('is-streaming')) && !release;
+  const nextHeight = isStreaming ? getStreamingViewportLockedHeight() : targetHeight;
 
-  if (immediate) {
+  if (isStreaming) {
     const previousTransition = resultContentViewport.style.transition;
     resultContentViewport.style.transition = 'none';
-    resultContentViewport.style.maxHeight = `${targetHeight}px`;
+    resultContentViewport.style.height = `${nextHeight}px`;
+    resultContentViewport.style.maxHeight = `${nextHeight}px`;
+    resultContentViewport.offsetHeight;
+    resultContentViewport.style.transition = previousTransition;
+  } else if (immediate) {
+    const previousTransition = resultContentViewport.style.transition;
+    resultContentViewport.style.transition = 'none';
+    resultContentViewport.style.height = 'auto';
+    resultContentViewport.style.maxHeight = `${nextHeight}px`;
     resultContentViewport.offsetHeight;
     resultContentViewport.style.transition = previousTransition;
   } else {
-    resultContentViewport.style.maxHeight = `${targetHeight}px`;
+    resultContentViewport.style.height = 'auto';
+    resultContentViewport.style.maxHeight = `${nextHeight}px`;
+  }
+
+  if (isStreaming) {
+    resultContentViewport.scrollTop = resultContentViewport.scrollHeight;
   }
 
   if (release) {
@@ -1747,8 +2029,8 @@ function syncRevealViewport(targetHeight, options = {}) {
     }
 
     revealResetTimer = setTimeout(() => {
-      stopStreamingViewportFollow();
       applyStreamingRevealState(false);
+      resultContentViewport.style.height = 'auto';
       resultContentViewport.style.maxHeight = 'none';
       setExportButtonVisibility(true);
       requestAnimationFrame(scrollResultIntoPrimaryView);
@@ -1759,7 +2041,6 @@ function syncRevealViewport(targetHeight, options = {}) {
 function finalizeStreamReveal() {
   const targetHeight = resultContent.scrollHeight;
   syncRevealViewport(targetHeight, { release: true });
-  startStreamingViewportFollow(420);
 }
 
 function advanceStreamRevealIndex(source, startIndex, visibleBudget) {
@@ -1840,7 +2121,6 @@ function runStreamRelease(now) {
     }
 
     renderResult(revealedText, { streaming: true });
-    startStreamingViewportFollow(920);
   }
 
   const fullyReleased = revealedStreamIndex >= incomingStreamText.length;
@@ -1886,12 +2166,13 @@ function prepareStreamingUI() {
   resetStreamRenderState();
   resultSection.classList.remove('active');
   errorMsg.classList.remove('active');
-  resultTagLabel.textContent = DEFAULT_RESULT_TAG;
+  resultTagLabel.textContent = getDefaultResultTag();
   waiting.classList.add('active');
   syncPageIdleState();
   scheduleWaitingViewportFocus();
   resultContent.innerHTML = '';
   applyStreamingRevealState(false);
+  resultContentViewport.style.height = '0px';
   resultContentViewport.style.maxHeight = '0px';
   setExportButtonVisibility(false);
   streamNetworkDone = false;
@@ -1904,6 +2185,27 @@ function prepareStreamingUI() {
 function handleStreamChunk(partialText) {
   stopHintRotation();
   waiting.classList.remove('active');
+
+  // First chunk: activate result section and lock viewport height immediately
+  if (!resultSection.classList.contains('active')) {
+    resultSection.classList.add('active');
+    syncPageIdleState();
+
+    const viewportRect = resultContentViewport.getBoundingClientRect();
+    const bottomInset = isCompactViewport() ? 104 : 132;
+    const availableHeight = window.innerHeight - viewportRect.top - bottomInset;
+    streamingViewportLockedHeight = Math.max(220, Math.min(Math.round(availableHeight), 420));
+
+    resultContentViewport.style.transition = 'none';
+    resultContentViewport.style.height = `${streamingViewportLockedHeight}px`;
+    resultContentViewport.style.maxHeight = `${streamingViewportLockedHeight}px`;
+    resultContentViewport.offsetHeight;
+    resultContentViewport.style.transition = '';
+
+    applyStreamingRevealState(true);
+    scrollResultSectionIntoView();
+  }
+
   scheduleStreamRender(partialText);
 }
 
@@ -1919,20 +2221,22 @@ function handleStreamError(message) {
   stopHintRotation();
   waiting.classList.remove('active');
   syncPageIdleState();
-  showError('消解过程出现波折：' + message + '，请稍后再试。');
+  const locale = getLocale();
+  showError(locale.errors.streamFailedPrefix + message + locale.errors.tryAgain);
 }
 
 function handleStaticResult(text) {
   renderResult(text);
   setExportButtonVisibility(true);
   setTimeout(() => {
-    resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    scrollResultIntoPrimaryView();
   });
 }
 
 function setExportButtonState(isBusy) {
   exportPdfBtn.disabled = isBusy;
-  exportPdfBtn.querySelector('span').textContent = isBusy ? '导出中...' : '保存 PDF';
+  const locale = getLocale();
+  exportPdfText.textContent = isBusy ? locale.exportingPdf : locale.exportPdf;
 }
 
 function getLocalDateStamp() {
@@ -1945,12 +2249,12 @@ function getLocalDateStamp() {
 
 async function exportResultAsPdf() {
   if (!resultSection.classList.contains('active') || !resultContent.textContent.trim()) {
-    showError('请先生成一条 AI 回复，再导出 PDF');
+    showError(getLocale().errors.exportNoResult);
     return;
   }
 
   if (typeof window.html2canvas !== 'function' || !window.PDFLib?.PDFDocument) {
-    showError('PDF 导出组件加载失败，请稍后再试');
+    showError(getLocale().errors.exportComponentFailed);
     return;
   }
 
@@ -1985,14 +2289,14 @@ async function exportResultAsPdf() {
 
     const datePart = getLocalDateStamp();
     downloadLink.href = pdfUrl;
-    downloadLink.download = `命名即消解-${datePart}.pdf`;
+    downloadLink.download = `${getLocale().pdfFilenamePrefix}-${datePart}.pdf`;
     downloadLink.style.display = 'none';
     document.body.appendChild(downloadLink);
     downloadLink.click();
     downloadLink.remove();
     setTimeout(() => URL.revokeObjectURL(pdfUrl), 1000);
   } catch (error) {
-    showError('导出 PDF 失败：' + error.message);
+    showError(getLocale().errors.exportFailedPrefix + error.message);
   } finally {
     setExportButtonState(false);
   }
@@ -2041,13 +2345,14 @@ function closeThemeDrawer() {
 }
 
 function renderThemeOptions() {
+  const locale = getLocale();
   themeGrid.innerHTML = backgroundThemes.map(theme => `
     <button
       class="theme-card${theme.id === activeThemeId ? ' active' : ''}"
       type="button"
       data-theme-id="${theme.id}"
       aria-pressed="${theme.id === activeThemeId}"
-      aria-label="切换到${theme.name}背景"
+      aria-label="${locale.themeAriaPrefix}${theme.label[currentLanguage]}${locale.themeAriaSuffix}"
     >
       <span class="theme-card-image" style="background-image: linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.12)), url('${theme.image}')"></span>
       <span class="theme-card-check" aria-hidden="true">
@@ -2055,7 +2360,7 @@ function renderThemeOptions() {
           <path d="M7.5 12.5L10.5 15.4L16.8 8.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </span>
-      <span class="theme-card-label">${theme.name}</span>
+      <span class="theme-card-label">${theme.label[currentLanguage]}</span>
     </button>
   `).join('');
 }
@@ -2153,20 +2458,38 @@ function isHtmlFragment(text) {
   return /<([a-z]+)(\s|>)/i.test(text);
 }
 
+function scrollResultSectionIntoView() {
+  requestAnimationFrame(() => {
+    const rect = resultSection.getBoundingClientRect();
+    const targetTop = Math.max(0, window.scrollY + rect.bottom - window.innerHeight + 28);
+    smoothWindowScrollTo(targetTop);
+  });
+}
+
 function renderResult(text, options = {}) {
   const { streaming = false } = options;
   const normalizedText = normalizeGeneratedHtml(text);
+  const wasActive = resultSection.classList.contains('active');
 
   if (isHtmlFragment(normalizedText)) {
-    resultTagLabel.textContent = DEFAULT_RESULT_TAG;
+    resultTagLabel.textContent = getDefaultResultTag();
     resultContent.innerHTML = normalizedText;
     resultSection.classList.add('active');
-    applyStreamingRevealState(streaming);
 
-    requestAnimationFrame(() => {
-      const targetHeight = resultContent.scrollHeight;
-      syncRevealViewport(targetHeight, { immediate: !streaming, release: !streaming });
-    });
+    if (streaming && !wasActive) {
+      // First frame: set locked height BEFORE adding is-streaming class (which has CSS transition)
+      syncRevealViewport(resultContent.scrollHeight, { immediate: true, release: false, forceStreaming: true });
+      applyStreamingRevealState(true);
+      scrollResultSectionIntoView();
+    } else if (streaming) {
+      applyStreamingRevealState(true);
+      syncRevealViewport(resultContent.scrollHeight, { immediate: false, release: false });
+    } else {
+      applyStreamingRevealState(false);
+      requestAnimationFrame(() => {
+        syncRevealViewport(resultContent.scrollHeight, { immediate: true, release: true });
+      });
+    }
     return;
   }
 
@@ -2177,11 +2500,11 @@ function renderResult(text, options = {}) {
   let displayText = normalizedText;
   let htmlContent = '';
 
-  resultTagLabel.textContent = DEFAULT_RESULT_TAG;
+  resultTagLabel.textContent = getDefaultResultTag();
   if (namingText) {
     htmlContent += `
       <div class="naming">
-        <div class="label">困 境 命 名</div>
+        <div class="label">${currentLanguage === 'zh' ? '困 境 命 名' : 'CORE NAME'}</div>
         <div class="name">${escapeHtml(namingText)}</div>
       </div>
       <div class="divider"></div>
@@ -2193,12 +2516,21 @@ function renderResult(text, options = {}) {
   resultContent.innerHTML = htmlContent;
   resultSection.classList.add('active');
   syncPageIdleState();
-  applyStreamingRevealState(streaming);
 
-  requestAnimationFrame(() => {
-    const targetHeight = resultContent.scrollHeight;
-    syncRevealViewport(targetHeight, { immediate: !streaming, release: !streaming });
-  });
+  if (streaming && !wasActive) {
+    // First frame: set locked height BEFORE adding is-streaming class (which has CSS transition)
+    syncRevealViewport(resultContent.scrollHeight, { immediate: true, release: false, forceStreaming: true });
+    applyStreamingRevealState(true);
+    scrollResultSectionIntoView();
+  } else if (streaming) {
+    applyStreamingRevealState(true);
+    syncRevealViewport(resultContent.scrollHeight, { immediate: false, release: false });
+  } else {
+    applyStreamingRevealState(false);
+    requestAnimationFrame(() => {
+      syncRevealViewport(resultContent.scrollHeight, { immediate: true, release: true });
+    });
+  }
 }
 
 async function streamCompletion(userInputText, onChunk) {
@@ -2210,6 +2542,7 @@ async function streamCompletion(userInputText, onChunk) {
     },
     body: JSON.stringify({
       user_input: userInputText,
+      language: currentLanguage,
       model: MODEL,
       stream: true,
     }),
@@ -2220,7 +2553,7 @@ async function streamCompletion(userInputText, onChunk) {
   }
 
   if (!response.body) {
-    throw new Error('流式响应不可用');
+    throw new Error(currentLanguage === 'zh' ? '流式响应不可用' : 'Streaming response is unavailable.');
   }
 
   const reader = response.body.getReader();
@@ -2265,14 +2598,16 @@ async function streamCompletion(userInputText, onChunk) {
 }
 
 dissolveBtn.addEventListener('click', async () => {
-  const text = userInput.value.trim();
+  const text = getNormalizedUserInput();
   if (!text) {
-    showError('请先写下你当下的困境');
+    showError(getLocale().errors.emptyInput);
     userInput.focus();
     return;
   }
 
-  dissolveBtn.disabled = true;
+  isSubmitting = true;
+  lastSubmittedSignature = getSubmissionSignature();
+  syncDissolveButtonState();
   prepareStreamingUI();
 
   try {
@@ -2284,8 +2619,14 @@ dissolveBtn.addEventListener('click', async () => {
   } catch (err) {
     handleStreamError(err.message);
   } finally {
-    dissolveBtn.disabled = false;
+    isSubmitting = false;
+    syncDissolveButtonState();
   }
+});
+
+languageToggle.addEventListener('click', () => {
+  currentLanguage = currentLanguage === 'zh' ? 'en' : 'zh';
+  applyLocale();
 });
 
 themeToggle.addEventListener('click', () => {
@@ -2332,6 +2673,7 @@ exportPdfBtn.addEventListener('click', exportResultAsPdf);
 
 renderThemeOptions();
 applyBackgroundTheme(activeThemeId);
+applyLocale();
 setExportButtonVisibility(resultSection.classList.contains('active') && !resultContentViewport.classList.contains('is-streaming'));
 syncInputDecorationState();
 syncPageIdleState();
