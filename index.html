@@ -1520,8 +1520,11 @@ const backgroundThemes = [
 ];
 
 let activeThemeId = backgroundThemes[0].id;
-const STREAM_VISIBLE_CHARS_PER_SECOND = 48;
-const STREAM_MAX_VISIBLE_CHARS_PER_FRAME = 2;
+const STREAM_VISIBLE_CHARS_PER_SECOND = 30;
+const STREAM_MAX_VISIBLE_CHARS_PER_FRAME = 1;
+const STREAM_FOLLOW_STEP_FACTOR = 0.16;
+const STREAM_FOLLOW_MAX_STEP = 26;
+const STREAM_FOLLOW_MIN_STEP = 2;
 const PDF_EXPORT_RENDER_SCALE = Math.min(Math.max(window.devicePixelRatio || 1, 3), 4);
 
 const waitingHints = [
@@ -1552,21 +1555,23 @@ function isCompactViewport() {
   return window.matchMedia('(max-width: 640px)').matches;
 }
 
+function getWaitingViewportOffset() {
+  return isCompactViewport() ? 12 : Math.max(28, Math.round(window.innerHeight * 0.08));
+}
+
 function scrollWaitingIntoPrimaryView() {
-  if (!sectionDivider || !isCompactViewport()) {
+  if (!sectionDivider) {
     return;
   }
 
-  const targetTop = Math.max(0, window.scrollY + sectionDivider.getBoundingClientRect().top - 12);
+  const targetTop = Math.max(0, window.scrollY + sectionDivider.getBoundingClientRect().top - getWaitingViewportOffset());
   window.scrollTo({ top: targetTop, behavior: 'smooth' });
 }
 
 function scheduleWaitingViewportFocus() {
-  if (!isCompactViewport()) {
-    return;
+  if (isCompactViewport()) {
+    userInput.blur();
   }
-
-  userInput.blur();
 
   if (waitingScrollTimer) {
     clearTimeout(waitingScrollTimer);
@@ -1675,8 +1680,13 @@ function startStreamingViewportFollow(duration = 720) {
     const delta = rect.bottom - desiredBottom;
 
     if (Math.abs(delta) > 1) {
+      const stepSize = Math.sign(delta) * Math.min(
+        STREAM_FOLLOW_MAX_STEP,
+        Math.max(STREAM_FOLLOW_MIN_STEP, Math.abs(delta) * STREAM_FOLLOW_STEP_FACTOR)
+      );
+
       window.scrollTo({
-        top: window.scrollY + Math.max(Math.min(delta * 0.24, 42), -42),
+        top: window.scrollY + stepSize,
         behavior: 'auto',
       });
     }
@@ -1830,7 +1840,7 @@ function runStreamRelease(now) {
     }
 
     renderResult(revealedText, { streaming: true });
-    startStreamingViewportFollow(760);
+    startStreamingViewportFollow(920);
   }
 
   const fullyReleased = revealedStreamIndex >= incomingStreamText.length;
