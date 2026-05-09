@@ -202,6 +202,58 @@
     pointer-events: none;
   }
 
+  .repo-link {
+    position: fixed;
+    top: 22px;
+    right: 78px;
+    height: 44px;
+    padding: 0 16px;
+    border: 1px solid rgba(225, 233, 207, 0.42);
+    border-radius: 14px;
+    background: rgba(248, 250, 242, 0.12);
+    color: rgba(239, 243, 231, 0.96);
+    text-decoration: none;
+    backdrop-filter: blur(18px);
+    box-shadow: 0 16px 34px rgba(7, 14, 8, 0.22);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 30;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+  }
+
+  .repo-link:hover {
+    transform: translateY(-1px);
+    border-color: rgba(233, 239, 220, 0.7);
+    background: rgba(248, 250, 242, 0.18);
+    box-shadow: 0 20px 38px rgba(7, 14, 8, 0.26);
+  }
+
+  .repo-link::after {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.08);
+    pointer-events: none;
+  }
+
+  .repo-link svg {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 auto;
+  }
+
+  .repo-link-label {
+    position: relative;
+    top: -0.5px;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    white-space: nowrap;
+  }
+
   .theme-backdrop {
     position: fixed;
     inset: 0;
@@ -1077,6 +1129,19 @@
       border-radius: 12px;
     }
 
+    .repo-link {
+      top: 16px;
+      right: 64px;
+      height: 40px;
+      padding: 0 12px;
+      border-radius: 12px;
+      gap: 8px;
+    }
+
+    .repo-link-label {
+      font-size: 13px;
+    }
+
     .theme-drawer {
       width: min(100vw, 320px);
       padding: 18px 12px 20px;
@@ -1164,6 +1229,12 @@
 </style>
 </head>
 <body>
+
+<a class="repo-link" href="https://github.com/xiangxiangdong111-ops/nomen-dissolve" target="_blank" rel="noreferrer" aria-label="打开 GitHub 仓库">
+  <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M12 2C6.48 2 2 6.58 2 12.23C2 16.75 4.87 20.58 8.84 21.93C9.34 22.03 9.52 21.71 9.52 21.43C9.52 21.18 9.51 20.34 9.5 19.23C6.73 19.85 6.14 18.02 6.14 18.02C5.68 16.81 5.03 16.49 5.03 16.49C4.12 15.85 5.1 15.86 5.1 15.86C6.1 15.94 6.63 16.92 6.63 16.92C7.52 18.49 8.97 18.04 9.54 17.78C9.63 17.11 9.89 16.66 10.18 16.4C7.97 16.14 5.65 15.26 5.65 11.34C5.65 10.22 6.04 9.3 6.68 8.58C6.58 8.33 6.24 7.28 6.78 5.86C6.78 5.86 7.62 5.58 9.49 6.89C10.29 6.66 11.15 6.54 12 6.54C12.85 6.54 13.71 6.66 14.51 6.89C16.38 5.58 17.22 5.86 17.22 5.86C17.76 7.28 17.42 8.33 17.32 8.58C17.96 9.3 18.35 10.22 18.35 11.34C18.35 15.27 16.02 16.14 13.8 16.39C14.16 16.71 14.48 17.33 14.48 18.27C14.48 19.62 14.47 20.99 14.47 21.43C14.47 21.71 14.65 22.04 15.16 21.93C19.13 20.58 22 16.75 22 12.23C22 6.58 17.52 2 12 2Z"/>
+  </svg>
+</a>
 
 <button class="theme-toggle" id="themeToggle" type="button" aria-label="打开背景主题抽屉" aria-controls="themeDrawer" aria-expanded="false">
   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
