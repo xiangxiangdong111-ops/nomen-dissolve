@@ -87,7 +87,6 @@
   * { margin:0; padding:0; box-sizing:border-box; }
 
   html {
-    scrollbar-gutter: stable;
     scrollbar-width: thin;
     scrollbar-color: var(--page-scrollbar-thumb) var(--page-scrollbar-track);
   }
@@ -159,6 +158,34 @@
     padding: 60px 24px 80px;
     position: relative;
     z-index: 1;
+  }
+
+  body.page-idle .container {
+    min-height: 100dvh;
+    padding-top: 36px;
+    padding-bottom: 32px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  body.page-idle .header {
+    margin-bottom: 42px;
+  }
+
+  body.page-idle .input-section {
+    margin-bottom: 24px;
+  }
+
+  body.page-idle .btn-area {
+    margin-bottom: 28px;
+  }
+
+  body.page-idle .section-divider {
+    margin: 34px auto 14px;
+  }
+
+  body.page-idle .footer {
+    margin-top: auto;
   }
 
   .theme-toggle {
@@ -485,7 +512,7 @@
 
   #userInput {
     width: 100%;
-    min-height: 160px;
+    min-height: 110px;
     border: none;
     outline: none;
     resize: none;
@@ -1106,6 +1133,28 @@
     .header h1 { font-size: 22px; letter-spacing: 4px; }
     .result-card { padding: 28px 20px 56px; }
 
+    body.page-idle .container {
+      min-height: 100dvh;
+      padding-top: 24px;
+      padding-bottom: 24px;
+    }
+
+    body.page-idle .header {
+      margin-bottom: 28px;
+    }
+
+    body.page-idle .input-section {
+      margin-bottom: 20px;
+    }
+
+    body.page-idle .btn-area {
+      margin-bottom: 22px;
+    }
+
+    body.page-idle .section-divider {
+      margin: 26px auto 12px;
+    }
+
     .result-card .content-viewport.is-streaming {
       -webkit-mask-image: linear-gradient(
         180deg,
@@ -1228,7 +1277,7 @@
   }
 </style>
 </head>
-<body>
+<body class="page-idle">
 
 <a class="repo-link" href="https://github.com/xiangxiangdong111-ops/nomen-dissolve" target="_blank" rel="noreferrer" aria-label="打开 GitHub 仓库">
   <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -1497,7 +1546,7 @@ let streamReleaseLastTime = 0;
 let streamNetworkDone = false;
 let inputResizeSession = null;
 
-const INPUT_MIN_HEIGHT = 160;
+const INPUT_MIN_HEIGHT = 128;
 
 function isCompactViewport() {
   return window.matchMedia('(max-width: 640px)').matches;
@@ -1589,6 +1638,11 @@ function stopHintRotation() {
 
 function syncInputDecorationState() {
   inputWrapper.classList.toggle('has-content', userInput.value.trim().length > 0);
+}
+
+function syncPageIdleState() {
+  const isIdle = !waiting.classList.contains('active') && !resultSection.classList.contains('active');
+  document.body.classList.toggle('page-idle', isIdle);
 }
 
 function showError(msg) {
@@ -1824,6 +1878,7 @@ function prepareStreamingUI() {
   errorMsg.classList.remove('active');
   resultTagLabel.textContent = DEFAULT_RESULT_TAG;
   waiting.classList.add('active');
+  syncPageIdleState();
   scheduleWaitingViewportFocus();
   resultContent.innerHTML = '';
   applyStreamingRevealState(false);
@@ -1845,6 +1900,7 @@ function handleStreamChunk(partialText) {
 function handleStreamComplete(finalText) {
   stopHintRotation();
   waiting.classList.remove('active');
+  syncPageIdleState();
   markStreamCompleted(finalText);
 }
 
@@ -1852,6 +1908,7 @@ function handleStreamError(message) {
   cancelStreamingUI();
   stopHintRotation();
   waiting.classList.remove('active');
+  syncPageIdleState();
   showError('消解过程出现波折：' + message + '，请稍后再试。');
 }
 
@@ -2125,6 +2182,7 @@ function renderResult(text, options = {}) {
   htmlContent += renderMarkdown(displayText);
   resultContent.innerHTML = htmlContent;
   resultSection.classList.add('active');
+  syncPageIdleState();
   applyStreamingRevealState(streaming);
 
   requestAnimationFrame(() => {
@@ -2266,6 +2324,7 @@ renderThemeOptions();
 applyBackgroundTheme(activeThemeId);
 setExportButtonVisibility(resultSection.classList.contains('active') && !resultContentViewport.classList.contains('is-streaming'));
 syncInputDecorationState();
+syncPageIdleState();
 </script>
 
 </body>
