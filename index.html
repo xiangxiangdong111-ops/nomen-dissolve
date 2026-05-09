@@ -21,9 +21,51 @@
     --card: rgba(255,255,252,0.85);
     --border: #d8d2c6;
     --bg-image: url('https://images.unsplash.com/photo-1532597668566-591132480e5f?auto=format&fit=crop&w=1800&q=80');
+    --page-scrollbar-thumb: rgba(191, 212, 159, 0.62);
+    --page-scrollbar-thumb-hover: rgba(213, 230, 183, 0.8);
+    --page-scrollbar-track: rgba(14, 24, 16, 0.42);
+    --page-scrollbar-border: rgba(236, 241, 226, 0.12);
+    --panel-scrollbar-thumb: rgba(191, 212, 159, 0.5);
+    --panel-scrollbar-thumb-hover: rgba(214, 230, 188, 0.74);
+    --panel-scrollbar-track: rgba(244, 248, 237, 0.08);
   }
 
   * { margin:0; padding:0; box-sizing:border-box; }
+
+  html {
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    scrollbar-color: var(--page-scrollbar-thumb) var(--page-scrollbar-track);
+  }
+
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  html::-webkit-scrollbar-track,
+  body::-webkit-scrollbar-track {
+    background: linear-gradient(180deg, rgba(13, 23, 15, 0.84), rgba(17, 30, 19, 0.72));
+    border-left: 1px solid var(--page-scrollbar-border);
+  }
+
+  html::-webkit-scrollbar-thumb,
+  body::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--page-scrollbar-thumb-hover), var(--page-scrollbar-thumb));
+    border: 3px solid rgba(13, 23, 15, 0.72);
+    border-radius: 999px;
+    box-shadow: inset 0 0 0 1px rgba(247, 250, 239, 0.16), 0 0 14px rgba(163, 191, 142, 0.12);
+  }
+
+  html::-webkit-scrollbar-thumb:hover,
+  body::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, rgba(228, 239, 207, 0.94), var(--page-scrollbar-thumb-hover));
+  }
+
+  html::-webkit-scrollbar-corner,
+  body::-webkit-scrollbar-corner {
+    background: transparent;
+  }
 
   body {
     font-family: 'Noto Sans SC', sans-serif;
@@ -317,6 +359,10 @@
     transition: border-color 0.4s, box-shadow 0.4s;
   }
 
+  .input-wrapper.is-resizing {
+    box-shadow: 0 0 0 3px rgba(215, 227, 186, 0.14), 0 16px 36px rgba(8, 16, 10, 0.2);
+  }
+
   .input-wrapper:focus-within {
     border-color: rgba(233, 239, 220, 0.76);
     box-shadow: 0 0 0 3px rgba(215, 227, 186, 0.1), 0 14px 34px rgba(8, 16, 10, 0.18);
@@ -336,13 +382,87 @@
     min-height: 160px;
     border: none;
     outline: none;
-    resize: vertical;
+    resize: none;
     font-family: 'Noto Sans SC', sans-serif;
     font-size: 16px;
     line-height: 1.9;
     color: #eef2e6;
     background: transparent;
     font-weight: 300;
+    padding-right: 28px;
+    padding-bottom: 18px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--panel-scrollbar-thumb) rgba(244, 248, 237, 0.04);
+  }
+
+  .input-resize-handle {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    padding: 0;
+    background: transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: ns-resize;
+    color: rgba(215, 229, 190, 0.34);
+    opacity: 0.72;
+    transition: transform 0.2s ease, color 0.2s ease, opacity 0.2s ease, filter 0.2s ease;
+  }
+
+  .input-resize-handle:hover,
+  .input-wrapper.is-resizing .input-resize-handle {
+    color: rgba(233, 241, 220, 0.6);
+    opacity: 1;
+    filter: drop-shadow(0 3px 8px rgba(8, 16, 10, 0.14));
+  }
+
+  .input-resize-handle:active {
+    transform: translateY(1px);
+  }
+
+  .input-resize-handle svg {
+    width: 24px;
+    height: 24px;
+    display: block;
+  }
+
+  body.is-input-resizing,
+  body.is-input-resizing * {
+    cursor: ns-resize !important;
+    user-select: none;
+  }
+
+  #userInput::-webkit-scrollbar,
+  .theme-drawer::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  #userInput::-webkit-scrollbar-track,
+  .theme-drawer::-webkit-scrollbar-track {
+    background: linear-gradient(180deg, rgba(245, 249, 238, 0.06), rgba(214, 225, 194, 0.02));
+    border-radius: 999px;
+  }
+
+  #userInput::-webkit-scrollbar-thumb,
+  .theme-drawer::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(218, 232, 191, 0.82), var(--panel-scrollbar-thumb));
+    border-radius: 999px;
+    border: 2px solid rgba(245, 248, 239, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(253, 254, 249, 0.14);
+  }
+
+  #userInput::-webkit-scrollbar-thumb:hover,
+  .theme-drawer::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, rgba(232, 241, 214, 0.9), var(--panel-scrollbar-thumb-hover));
+  }
+
+  .theme-drawer {
+    scrollbar-width: thin;
+    scrollbar-color: var(--panel-scrollbar-thumb) var(--panel-scrollbar-track);
   }
 
   #userInput::placeholder {
@@ -501,6 +621,55 @@
     padding: 22px 18px;
   }
 
+  .result-export-btn {
+    position: absolute;
+    right: 22px;
+    bottom: 21px;
+    z-index: 4;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    border: 1px solid rgba(142, 166, 115, 0.28);
+    border-radius: 999px;
+    background: rgba(249, 251, 244, 0.88);
+    color: #4d5d42;
+    box-shadow: 0 10px 24px rgba(8, 16, 10, 0.14);
+    backdrop-filter: blur(10px);
+    font-family: 'Noto Serif SC', serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease, background 0.22s ease, opacity 0.2s ease;
+  }
+
+  .result-export-btn.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(8px);
+  }
+
+  .result-export-btn:hover {
+    transform: translateY(-1px);
+    border-color: rgba(142, 166, 115, 0.48);
+    background: rgba(253, 254, 250, 0.94);
+    box-shadow: 0 14px 26px rgba(8, 16, 10, 0.18);
+  }
+
+  .result-export-btn:disabled {
+    cursor: wait;
+    opacity: 0.72;
+    transform: none;
+    box-shadow: 0 8px 18px rgba(8, 16, 10, 0.1);
+  }
+
+  .result-export-btn svg {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 auto;
+  }
+
   .result-shell::before {
     content: '';
     position: absolute;
@@ -581,21 +750,79 @@
     background: rgba(255,255,251,0.82);
     border: 1px solid rgba(226, 233, 212, 0.58);
     border-radius: 16px;
-    padding: 40px 36px;
+    padding: 40px 36px 62px;
     backdrop-filter: blur(14px);
     box-shadow: 0 18px 40px rgba(6, 13, 8, 0.12);
   }
 
   .result-card .tag {
-    display: inline-block;
+    position: relative;
+    display: block;
+    width: fit-content;
     font-family: 'Noto Serif SC', serif;
-    font-size: 11px;
-    letter-spacing: 3px;
+    font-size: 13px;
+    letter-spacing: 4px;
     color: var(--green-dark);
     background: var(--green-pale);
-    padding: 4px 12px;
+    padding: 7px 52px;
     border-radius: 4px;
-    margin-bottom: 24px;
+    margin: 0 auto 28px;
+    line-height: 1.2;
+  }
+
+  .result-card .tag-label {
+    position: relative;
+    top: -1px;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .result-card .tag-ornament {
+    position: absolute;
+    top: 50%;
+    width: 20px;
+    height: 11px;
+    margin-top: -5.5px;
+    display: block;
+  }
+
+  .result-card .tag-ornament svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .result-card .tag-ornament.is-left {
+    left: 18px;
+  }
+
+  .result-card .tag-ornament.is-right {
+    right: 18px;
+    transform: scaleX(-1);
+  }
+
+  .result-card .content-viewport {
+    position: relative;
+    overflow: visible;
+    max-height: none;
+  }
+
+  .result-card .content-viewport.is-streaming {
+    overflow: hidden;
+    transition: max-height 420ms linear;
+    will-change: max-height;
+    -webkit-mask-image: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 1) 0%,
+      rgba(0, 0, 0, 1) calc(100% - 26px),
+      rgba(0, 0, 0, 0) 100%
+    );
+    mask-image: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 1) 0%,
+      rgba(0, 0, 0, 1) calc(100% - 26px),
+      rgba(0, 0, 0, 0) 100%
+    );
   }
 
   .result-card .content {
@@ -645,6 +872,14 @@
     margin-bottom: 6px;
   }
 
+  .result-card .content > :last-child {
+    margin-bottom: 0;
+  }
+
+  .result-card .content.is-streaming {
+    transform: translateZ(0);
+  }
+
   .result-card .divider {
     width: 40px;
     height: 1px;
@@ -689,6 +924,14 @@
     gap: 28px;
     align-items: end;
     justify-items: center;
+    transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s ease;
+  }
+
+  .footer.is-streaming-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateX(-50%) translateY(10px);
   }
 
   .footer p {
@@ -755,7 +998,22 @@
   @media (max-width: 640px) {
     .container { padding: 40px 16px 60px; }
     .header h1 { font-size: 22px; letter-spacing: 4px; }
-    .result-card { padding: 28px 20px; }
+    .result-card { padding: 28px 20px 56px; }
+
+    .result-card .content-viewport.is-streaming {
+      -webkit-mask-image: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 1) 0%,
+        rgba(0, 0, 0, 1) calc(100% - 20px),
+        rgba(0, 0, 0, 0) 100%
+      );
+      mask-image: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 1) 0%,
+        rgba(0, 0, 0, 1) calc(100% - 20px),
+        rgba(0, 0, 0, 0) 100%
+      );
+    }
     #dissolveBtn { padding: 12px 36px; font-size: 15px; }
     .theme-toggle {
       top: 16px;
@@ -795,6 +1053,20 @@
 
     .result-shell {
       padding: 14px 10px;
+    }
+
+    .result-export-btn {
+      right: 20px;
+      bottom: 18px;
+      padding: 8px 12px;
+      gap: 6px;
+      font-size: 11px;
+      letter-spacing: 1px;
+    }
+
+    .result-export-btn svg {
+      width: 14px;
+      height: 14px;
     }
 
     .result-shell::before {
@@ -909,6 +1181,15 @@
 
       <label class="input-label">写下你当下的困境</label>
       <textarea id="userInput" placeholder="在这里，写下困扰你的事情……&#10;不必修饰，不必克制，如实写下即可。"></textarea>
+      <button class="input-resize-handle" id="inputResizeHandle" type="button" aria-label="拖拽调整输入框高度">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M5.8 18.7C7.85 17.1 9.4 14.95 10.22 12.18" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" opacity="0.72"/>
+          <path d="M10.65 19.15C12.55 17.05 13.92 14.4 14.52 11.28" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" opacity="0.56"/>
+          <path d="M15.2 18.55C16.7 16.92 17.86 14.98 18.82 12.55" stroke="currentColor" stroke-width="1.05" stroke-linecap="round" opacity="0.42"/>
+          <path d="M8.15 14.15C8.92 14.32 9.55 14.78 10.03 15.52" stroke="currentColor" stroke-width="0.96" stroke-linecap="round" opacity="0.42"/>
+          <path d="M13.15 12.72C13.98 12.9 14.62 13.38 15.12 14.12" stroke="currentColor" stroke-width="0.92" stroke-linecap="round" opacity="0.32"/>
+        </svg>
+      </button>
     </div>
   </section>
 
@@ -937,8 +1218,37 @@
       <div class="result-emblem result-emblem-left" aria-hidden="true"><span></span></div>
       <div class="result-emblem result-emblem-right" aria-hidden="true"><span></span></div>
       <div class="result-card">
-        <span class="tag" id="resultTag">专业命名</span>
-        <div class="content" id="resultContent"></div>
+        <button class="result-export-btn" id="exportPdfBtn" type="button" aria-label="导出当前 AI 回复为 PDF">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M12 4V14" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+            <path d="M8.5 10.8L12 14.4L15.5 10.8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M6 18.2H18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+          <span>保存 PDF</span>
+        </button>
+        <span class="tag" id="resultTag">
+          <span class="tag-ornament is-left" aria-hidden="true">
+            <svg viewBox="0 0 36 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 10H10.5" stroke="#5a7247" stroke-width="1.6" stroke-linecap="round"/>
+              <path d="M10.8 10C12.4 7.15 14.95 5.6 18 5.4C16.3 6.6 15.2 8.05 14.75 10C15.2 11.95 16.3 13.4 18 14.6C14.95 14.4 12.4 12.85 10.8 10Z" fill="#8b6f4e" fill-opacity="0.14" stroke="#5a7247" stroke-width="1.25" stroke-linejoin="round"/>
+              <circle cx="21.9" cy="10" r="1.8" fill="#5a7247" fill-opacity="0.9"/>
+              <path d="M25.2 10H34" stroke="#5a7247" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span class="tag-label" id="resultTagLabel">命名之境</span>
+          <span class="tag-ornament is-right" aria-hidden="true">
+            <svg viewBox="0 0 36 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 10H10.5" stroke="#5a7247" stroke-width="1.6" stroke-linecap="round"/>
+              <path d="M10.8 10C12.4 7.15 14.95 5.6 18 5.4C16.3 6.6 15.2 8.05 14.75 10C15.2 11.95 16.3 13.4 18 14.6C14.95 14.4 12.4 12.85 10.8 10Z" fill="#8b6f4e" fill-opacity="0.14" stroke="#5a7247" stroke-width="1.25" stroke-linejoin="round"/>
+              <circle cx="21.9" cy="10" r="1.8" fill="#5a7247" fill-opacity="0.9"/>
+              <path d="M25.2 10H34" stroke="#5a7247" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </span>
+        </span>
+        <div class="content-viewport" id="resultContentViewport">
+          <div class="content" id="resultContent"></div>
+          <span id="resultStreamTail" aria-hidden="true" style="display:block;width:1px;height:1px;"></span>
+        </div>
       </div>
     </div>
   </section>
@@ -971,22 +1281,31 @@
   </footer>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script>
 const SYSTEM_PROMPT = '你是一位融合多学科视角的顶尖学者。';
-const API_URL = 'http://127.0.0.1:8000/v1/chat/completions';
+const API_URL = 'http://43.161.214.124:8000/v1/chat/completions';
 const API_KEY = 'Bearer my-local-proxy-key-1234567890abcdef';
 const MODEL = 'MiniMax-M2.7';
 const MODEL_LABEL = '命名之镜';
-const DEFAULT_RESULT_TAG = '专业命名';
+const DEFAULT_RESULT_TAG = '命名之境';
 
 const userInput = document.getElementById('userInput');
+const inputResizeHandle = document.getElementById('inputResizeHandle');
 const inputWrapper = document.querySelector('.input-wrapper');
 const dissolveBtn = document.getElementById('dissolveBtn');
 const waiting = document.getElementById('waiting');
 const resultSection = document.getElementById('resultSection');
 const resultContent = document.getElementById('resultContent');
+const resultContentViewport = document.getElementById('resultContentViewport');
+const resultStreamTail = document.getElementById('resultStreamTail');
 const errorMsg = document.getElementById('errorMsg');
 const resultTag = document.getElementById('resultTag');
+const resultTagLabel = document.getElementById('resultTagLabel');
+const resultShell = document.querySelector('.result-shell');
+const exportPdfBtn = document.getElementById('exportPdfBtn');
+const footer = document.querySelector('.footer');
 const themeToggle = document.getElementById('themeToggle');
 const themeDrawer = document.getElementById('themeDrawer');
 const themeBackdrop = document.getElementById('themeBackdrop');
@@ -1027,6 +1346,9 @@ const backgroundThemes = [
 ];
 
 let activeThemeId = backgroundThemes[0].id;
+const STREAM_VISIBLE_CHARS_PER_SECOND = 48;
+const STREAM_MAX_VISIBLE_CHARS_PER_FRAME = 2;
+const PDF_EXPORT_RENDER_SCALE = Math.min(Math.max(window.devicePixelRatio || 1, 3), 4);
 
 const waitingHints = [
   '正在凝视深渊……',
@@ -1038,6 +1360,53 @@ const waitingHints = [
 
 let hintIndex = 0;
 let hintTimer = null;
+let revealResetTimer = null;
+let streamFollowFrame = null;
+let streamFollowUntil = 0;
+let streamReleaseFrame = null;
+let incomingStreamText = '';
+let revealedStreamIndex = 0;
+let streamReleaseCarry = 0;
+let streamReleaseLastTime = 0;
+let streamNetworkDone = false;
+let inputResizeSession = null;
+
+const INPUT_MIN_HEIGHT = 160;
+
+function stopInputResize() {
+  if (!inputResizeSession) {
+    return;
+  }
+
+  inputResizeSession = null;
+  inputWrapper.classList.remove('is-resizing');
+  document.body.classList.remove('is-input-resizing');
+}
+
+function updateInputHeight(nextHeight) {
+  userInput.style.height = `${Math.max(INPUT_MIN_HEIGHT, Math.round(nextHeight))}px`;
+}
+
+function handleInputResizeMove(event) {
+  if (!inputResizeSession) {
+    return;
+  }
+
+  event.preventDefault();
+  const deltaY = event.clientY - inputResizeSession.startY;
+  updateInputHeight(inputResizeSession.startHeight + deltaY);
+}
+
+function startInputResize(event) {
+  event.preventDefault();
+  inputResizeSession = {
+    startY: event.clientY,
+    startHeight: userInput.getBoundingClientRect().height,
+  };
+
+  inputWrapper.classList.add('is-resizing');
+  document.body.classList.add('is-input-resizing');
+}
 
 function startHintRotation() {
   const hintEl = waiting.querySelector('.hint');
@@ -1070,6 +1439,339 @@ function showError(msg) {
   errorMsg.textContent = msg;
   errorMsg.classList.add('active');
   setTimeout(() => errorMsg.classList.remove('active'), 4000);
+}
+
+function setExportButtonVisibility(isVisible) {
+  exportPdfBtn.classList.toggle('is-hidden', !isVisible);
+  exportPdfBtn.setAttribute('aria-hidden', String(!isVisible));
+}
+
+function stopStreamingViewportFollow() {
+  if (streamFollowFrame) {
+    cancelAnimationFrame(streamFollowFrame);
+    streamFollowFrame = null;
+  }
+}
+
+function startStreamingViewportFollow(duration = 720) {
+  streamFollowUntil = performance.now() + duration;
+  if (streamFollowFrame) {
+    return;
+  }
+
+  const step = (now) => {
+    const rect = resultStreamTail.getBoundingClientRect();
+    const desiredBottom = Math.min(window.innerHeight - 88, window.innerHeight * 0.82);
+    const delta = rect.bottom - desiredBottom;
+
+    if (Math.abs(delta) > 1) {
+      window.scrollTo({
+        top: window.scrollY + Math.max(Math.min(delta * 0.24, 42), -42),
+        behavior: 'auto',
+      });
+    }
+
+    if (now < streamFollowUntil || Math.abs(delta) > 1) {
+      streamFollowFrame = requestAnimationFrame(step);
+    } else {
+      streamFollowFrame = null;
+    }
+  };
+
+  streamFollowFrame = requestAnimationFrame(step);
+}
+
+function scrollResultIntoPrimaryView() {
+  resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function resetStreamRenderState() {
+  if (streamReleaseFrame) {
+    cancelAnimationFrame(streamReleaseFrame);
+    streamReleaseFrame = null;
+  }
+  if (revealResetTimer) {
+    clearTimeout(revealResetTimer);
+    revealResetTimer = null;
+  }
+  stopStreamingViewportFollow();
+  incomingStreamText = '';
+  revealedStreamIndex = 0;
+  streamReleaseCarry = 0;
+  streamReleaseLastTime = 0;
+  streamNetworkDone = false;
+}
+
+function applyStreamingRevealState(isStreaming) {
+  resultContent.classList.toggle('is-streaming', isStreaming);
+  resultContentViewport.classList.toggle('is-streaming', isStreaming);
+  footer.classList.toggle('is-streaming-hidden', isStreaming);
+}
+
+function syncRevealViewport(targetHeight, options = {}) {
+  const { immediate = false, release = false } = options;
+
+  if (immediate) {
+    const previousTransition = resultContentViewport.style.transition;
+    resultContentViewport.style.transition = 'none';
+    resultContentViewport.style.maxHeight = `${targetHeight}px`;
+    resultContentViewport.offsetHeight;
+    resultContentViewport.style.transition = previousTransition;
+  } else {
+    resultContentViewport.style.maxHeight = `${targetHeight}px`;
+  }
+
+  if (release) {
+    if (revealResetTimer) {
+      clearTimeout(revealResetTimer);
+    }
+
+    revealResetTimer = setTimeout(() => {
+      stopStreamingViewportFollow();
+      applyStreamingRevealState(false);
+      resultContentViewport.style.maxHeight = 'none';
+      setExportButtonVisibility(true);
+      requestAnimationFrame(scrollResultIntoPrimaryView);
+    }, 460);
+  }
+}
+
+function finalizeStreamReveal() {
+  const targetHeight = resultContent.scrollHeight;
+  syncRevealViewport(targetHeight, { release: true });
+  startStreamingViewportFollow(420);
+}
+
+function advanceStreamRevealIndex(source, startIndex, visibleBudget) {
+  let index = startIndex;
+  let consumedVisible = 0;
+
+  while (index < source.length) {
+    const currentChar = source[index];
+
+    if (currentChar === '<') {
+      const tagEndIndex = source.indexOf('>', index);
+      if (tagEndIndex === -1) {
+        break;
+      }
+
+      index = tagEndIndex + 1;
+      continue;
+    }
+
+    if (currentChar === '&') {
+      const entityEndIndex = source.indexOf(';', index);
+      if (entityEndIndex !== -1 && entityEndIndex - index <= 10) {
+        if (visibleBudget <= 0 || consumedVisible >= visibleBudget) {
+          break;
+        }
+
+        index = entityEndIndex + 1;
+        consumedVisible += 1;
+        continue;
+      }
+    }
+
+    if (visibleBudget <= 0 || consumedVisible >= visibleBudget) {
+      break;
+    }
+
+    index += 1;
+    consumedVisible += 1;
+  }
+
+  while (index < source.length && source[index] === '<') {
+    const tagEndIndex = source.indexOf('>', index);
+    if (tagEndIndex === -1) {
+      break;
+    }
+
+    index = tagEndIndex + 1;
+  }
+
+  return { nextIndex: index, consumedVisible };
+}
+
+function runStreamRelease(now) {
+  if (!streamReleaseLastTime) {
+    streamReleaseLastTime = now;
+  }
+
+  const elapsed = now - streamReleaseLastTime;
+  streamReleaseLastTime = now;
+  streamReleaseCarry += (elapsed * STREAM_VISIBLE_CHARS_PER_SECOND) / 1000;
+
+  const visibleBudget = Math.min(
+    Math.floor(streamReleaseCarry),
+    STREAM_MAX_VISIBLE_CHARS_PER_FRAME
+  );
+  const { nextIndex, consumedVisible } = advanceStreamRevealIndex(
+    incomingStreamText,
+    revealedStreamIndex,
+    visibleBudget
+  );
+
+  if (nextIndex !== revealedStreamIndex) {
+    revealedStreamIndex = nextIndex;
+    const revealedText = incomingStreamText.slice(0, revealedStreamIndex);
+
+    if (consumedVisible > 0) {
+      streamReleaseCarry = Math.max(0, streamReleaseCarry - consumedVisible);
+    }
+
+    renderResult(revealedText, { streaming: true });
+    startStreamingViewportFollow(760);
+  }
+
+  const fullyReleased = revealedStreamIndex >= incomingStreamText.length;
+  if (streamNetworkDone && fullyReleased) {
+    streamReleaseFrame = null;
+    renderResult(incomingStreamText, { streaming: true });
+    finalizeStreamReveal();
+    return;
+  }
+
+  if (!streamNetworkDone || !fullyReleased) {
+    streamReleaseFrame = requestAnimationFrame(runStreamRelease);
+  }
+}
+
+function scheduleStreamRender(text) {
+  incomingStreamText = text;
+
+  if (streamReleaseFrame) {
+    return;
+  }
+
+  streamReleaseFrame = requestAnimationFrame(runStreamRelease);
+}
+
+function markStreamCompleted(finalText) {
+  incomingStreamText = finalText;
+  streamNetworkDone = true;
+
+  if (!streamReleaseFrame) {
+    streamReleaseFrame = requestAnimationFrame(runStreamRelease);
+  }
+}
+
+function cancelStreamingUI() {
+  resetStreamRenderState();
+  applyStreamingRevealState(false);
+  resultContentViewport.style.maxHeight = 'none';
+  setExportButtonVisibility(false);
+}
+
+function prepareStreamingUI() {
+  resetStreamRenderState();
+  resultSection.classList.remove('active');
+  errorMsg.classList.remove('active');
+  resultTagLabel.textContent = DEFAULT_RESULT_TAG;
+  waiting.classList.add('active');
+  resultContent.innerHTML = '';
+  applyStreamingRevealState(false);
+  resultContentViewport.style.maxHeight = '0px';
+  setExportButtonVisibility(false);
+  streamNetworkDone = false;
+  incomingStreamText = '';
+  revealedStreamIndex = 0;
+  streamReleaseCarry = 0;
+  streamReleaseLastTime = 0;
+}
+
+function handleStreamChunk(partialText) {
+  stopHintRotation();
+  waiting.classList.remove('active');
+  scheduleStreamRender(partialText);
+}
+
+function handleStreamComplete(finalText) {
+  stopHintRotation();
+  waiting.classList.remove('active');
+  markStreamCompleted(finalText);
+}
+
+function handleStreamError(message) {
+  cancelStreamingUI();
+  stopHintRotation();
+  waiting.classList.remove('active');
+  showError('消解过程出现波折：' + message + '，请稍后再试。');
+}
+
+function handleStaticResult(text) {
+  renderResult(text);
+  setExportButtonVisibility(true);
+  setTimeout(() => {
+    resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+}
+
+function setExportButtonState(isBusy) {
+  exportPdfBtn.disabled = isBusy;
+  exportPdfBtn.querySelector('span').textContent = isBusy ? '导出中...' : '保存 PDF';
+}
+
+function getLocalDateStamp() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+async function exportResultAsPdf() {
+  if (!resultSection.classList.contains('active') || !resultContent.textContent.trim()) {
+    showError('请先生成一条 AI 回复，再导出 PDF');
+    return;
+  }
+
+  if (typeof window.html2canvas !== 'function' || !window.PDFLib?.PDFDocument) {
+    showError('PDF 导出组件加载失败，请稍后再试');
+    return;
+  }
+
+  try {
+    setExportButtonState(true);
+
+    const canvas = await window.html2canvas(resultShell, {
+      backgroundColor: '#f7f4ed',
+      scale: PDF_EXPORT_RENDER_SCALE,
+      useCORS: true,
+      logging: false,
+      ignoreElements: (element) => element === exportPdfBtn || exportPdfBtn.contains(element),
+    });
+
+    const imageData = canvas.toDataURL('image/png');
+    const { PDFDocument } = window.PDFLib;
+    const pdf = await PDFDocument.create();
+    const pngImage = await pdf.embedPng(imageData);
+    const page = pdf.addPage([pngImage.width, pngImage.height]);
+
+    page.drawImage(pngImage, {
+      x: 0,
+      y: 0,
+      width: pngImage.width,
+      height: pngImage.height,
+    });
+
+    const pdfBytes = await pdf.save();
+    const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    const downloadLink = document.createElement('a');
+
+    const datePart = getLocalDateStamp();
+    downloadLink.href = pdfUrl;
+    downloadLink.download = `命名即消解-${datePart}.pdf`;
+    downloadLink.style.display = 'none';
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    downloadLink.remove();
+    setTimeout(() => URL.revokeObjectURL(pdfUrl), 1000);
+  } catch (error) {
+    showError('导出 PDF 失败：' + error.message);
+  } finally {
+    setExportButtonState(false);
+  }
 }
 
 function applyBackgroundTheme(themeId) {
@@ -1227,13 +1929,20 @@ function isHtmlFragment(text) {
   return /<([a-z]+)(\s|>)/i.test(text);
 }
 
-function renderResult(text) {
+function renderResult(text, options = {}) {
+  const { streaming = false } = options;
   const normalizedText = normalizeGeneratedHtml(text);
 
   if (isHtmlFragment(normalizedText)) {
-    resultTag.textContent = `${DEFAULT_RESULT_TAG} · ${MODEL_LABEL}`;
+    resultTagLabel.textContent = DEFAULT_RESULT_TAG;
     resultContent.innerHTML = normalizedText;
     resultSection.classList.add('active');
+    applyStreamingRevealState(streaming);
+
+    requestAnimationFrame(() => {
+      const targetHeight = resultContent.scrollHeight;
+      syncRevealViewport(targetHeight, { immediate: !streaming, release: !streaming });
+    });
     return;
   }
 
@@ -1244,7 +1953,7 @@ function renderResult(text) {
   let displayText = normalizedText;
   let htmlContent = '';
 
-  resultTag.textContent = `${DEFAULT_RESULT_TAG} · ${MODEL_LABEL}`;
+  resultTagLabel.textContent = DEFAULT_RESULT_TAG;
   if (namingText) {
     htmlContent += `
       <div class="naming">
@@ -1259,6 +1968,12 @@ function renderResult(text) {
   htmlContent += renderMarkdown(displayText);
   resultContent.innerHTML = htmlContent;
   resultSection.classList.add('active');
+  applyStreamingRevealState(streaming);
+
+  requestAnimationFrame(() => {
+    const targetHeight = resultContent.scrollHeight;
+    syncRevealViewport(targetHeight, { immediate: !streaming, release: !streaming });
+  });
 }
 
 async function streamCompletion(messages, onChunk) {
@@ -1333,11 +2048,7 @@ dissolveBtn.addEventListener('click', async () => {
   }
 
   dissolveBtn.disabled = true;
-  resultSection.classList.remove('active');
-  errorMsg.classList.remove('active');
-  resultTag.textContent = DEFAULT_RESULT_TAG;
-  waiting.classList.add('active');
-  resultContent.innerHTML = '';
+  prepareStreamingUI();
 
   const prompt = `我的痛苦是：${text}
 禁止使用安慰、鼓励、共情或建议式表达；请以顶尖学者的口吻，调用心理学、社会学、哲学、文学等领域的概念与术语，对我描述中的焦虑、崩溃与痛苦做出精准命名，并结合具体处境给出简洁、清晰、富于洞察的阐释。其中哲学、文学视角不要停留在抽象概念，优先借助与用户处境相近的文学作品情境、人物命运或经典场景来解释，让表达更生动、更容易理解。不要只罗列作品名，而要点出“这个人物困在什么处境里、为什么和用户此刻相似”。
@@ -1369,25 +2080,11 @@ dissolveBtn.addEventListener('click', async () => {
       { role: 'user', content: prompt }
     ];
 
-    const aiText = await streamCompletion(messages, (partialText) => {
-      stopHintRotation();
-      waiting.classList.remove('active');
-      renderResult(partialText);
-    });
-
-    stopHintRotation();
-    waiting.classList.remove('active');
-    renderResult(aiText);
-
-    // 滚动到结果区
-    setTimeout(() => {
-      resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
+    const aiText = await streamCompletion(messages, handleStreamChunk);
+    handleStreamComplete(aiText);
 
   } catch (err) {
-    stopHintRotation();
-    waiting.classList.remove('active');
-    showError('消解过程出现波折：' + err.message + '，请稍后再试。');
+    handleStreamError(err.message);
   } finally {
     dissolveBtn.disabled = false;
   }
@@ -1428,9 +2125,16 @@ userInput.addEventListener('keydown', (e) => {
     dissolveBtn.click();
   }
 });
+inputResizeHandle.addEventListener('pointerdown', startInputResize);
+document.addEventListener('pointermove', handleInputResizeMove);
+document.addEventListener('pointerup', stopInputResize);
+document.addEventListener('pointercancel', stopInputResize);
+
+exportPdfBtn.addEventListener('click', exportResultAsPdf);
 
 renderThemeOptions();
 applyBackgroundTheme(activeThemeId);
+setExportButtonVisibility(resultSection.classList.contains('active') && !resultContentViewport.classList.contains('is-streaming'));
 syncInputDecorationState();
 </script>
 
