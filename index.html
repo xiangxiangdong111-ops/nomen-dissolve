@@ -1435,7 +1435,7 @@
         <ellipse cx="30" cy="12" rx="2.5" ry="5" transform="rotate(-20 30 12)" fill="#c8dbb3" opacity="0.3"/>
       </svg>
 
-      <label class="input-label" id="inputLabel">写下你当下的困境</label>
+      <label class="input-label" id="inputLabel" for="userInput">写下你当下的困境</label>
       <textarea id="userInput" placeholder="在这里，写下困扰你的事情……&#10;不必修饰，不必克制，如实写下即可。"></textarea>
       <button class="input-resize-handle" id="inputResizeHandle" type="button" aria-label="拖拽调整输入框高度">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -2334,6 +2334,67 @@ function getLocalDateStamp() {
   return `${year}-${month}-${day}`;
 }
 
+function getPdfFilename() {
+  return `${getLocale().pdfFilenamePrefix}-${getLocalDateStamp()}.pdf`;
+}
+
+function isFilePickerCancel(error) {
+  return error?.name === 'AbortError';
+}
+
+function shouldFallbackToDownload(error) {
+  return error?.name === 'SecurityError' || error?.name === 'NotAllowedError';
+}
+
+async function getPdfSaveTarget(filename) {
+  if (typeof window.showSaveFilePicker !== 'function') {
+    return { type: 'download' };
+  }
+
+  try {
+    const handle = await window.showSaveFilePicker({
+      suggestedName: filename,
+      types: [
+        {
+          description: 'PDF document',
+          accept: { 'application/pdf': ['.pdf'] },
+        },
+      ],
+    });
+    return { type: 'file', handle };
+  } catch (error) {
+    if (isFilePickerCancel(error)) {
+      return { type: 'cancelled' };
+    }
+
+    if (shouldFallbackToDownload(error)) {
+      return { type: 'download' };
+    }
+
+    throw error;
+  }
+}
+
+async function savePdfBlob(pdfBlob, filename, saveTarget) {
+  if (saveTarget.type === 'file') {
+    const writable = await saveTarget.handle.createWritable();
+    await writable.write(pdfBlob);
+    await writable.close();
+    return;
+  }
+
+  const pdfUrl = URL.createObjectURL(pdfBlob);
+  const downloadLink = document.createElement('a');
+
+  downloadLink.href = pdfUrl;
+  downloadLink.download = filename;
+  downloadLink.style.display = 'none';
+  document.body.appendChild(downloadLink);
+  downloadLink.click();
+  downloadLink.remove();
+  setTimeout(() => URL.revokeObjectURL(pdfUrl), 1000);
+}
+
 async function exportResultAsPdf() {
   if (!resultSection.classList.contains('active') || !resultContent.textContent.trim()) {
     showError(getLocale().errors.exportNoResult);
@@ -2347,6 +2408,12 @@ async function exportResultAsPdf() {
 
   try {
     setExportButtonState(true);
+
+    const filename = getPdfFilename();
+    const saveTarget = await getPdfSaveTarget(filename);
+    if (saveTarget.type === 'cancelled') {
+      return;
+    }
 
     const canvas = await window.html2canvas(resultShell, {
       backgroundColor: '#f7f4ed',
@@ -2371,17 +2438,7 @@ async function exportResultAsPdf() {
 
     const pdfBytes = await pdf.save();
     const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
-    const pdfUrl = URL.createObjectURL(pdfBlob);
-    const downloadLink = document.createElement('a');
-
-    const datePart = getLocalDateStamp();
-    downloadLink.href = pdfUrl;
-    downloadLink.download = `${getLocale().pdfFilenamePrefix}-${datePart}.pdf`;
-    downloadLink.style.display = 'none';
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    downloadLink.remove();
-    setTimeout(() => URL.revokeObjectURL(pdfUrl), 1000);
+    await savePdfBlob(pdfBlob, filename, saveTarget);
   } catch (error) {
     showError(getLocale().errors.exportFailedPrefix + error.message);
   } finally {
