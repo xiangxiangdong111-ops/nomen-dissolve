@@ -1713,8 +1713,16 @@ const LOCALES = {
 
 let activeThemeId = backgroundThemes[0].id;
 let currentLanguage = 'zh';
-const STREAM_VISIBLE_CHARS_PER_SECOND = 30;
-const STREAM_MAX_VISIBLE_CHARS_PER_FRAME = 1;
+const STREAM_RELEASE_SETTINGS = {
+  zh: {
+    visibleCharsPerSecond: 30,
+    maxVisibleCharsPerFrame: 1,
+  },
+  en: {
+    visibleCharsPerSecond: 54,
+    maxVisibleCharsPerFrame: 2,
+  },
+};
 const PAGE_SCROLL_DEFAULT_DURATION = 1150;
 const PAGE_SCROLL_SHORT_DURATION = 880;
 const PDF_EXPORT_RENDER_SCALE = Math.min(Math.max(window.devicePixelRatio || 1, 3), 4);
@@ -1819,6 +1827,10 @@ function syncLanguageQueryParam() {
 
 function getModelLabel() {
   return getLocale().modelLabel;
+}
+
+function getStreamReleaseSettings() {
+  return STREAM_RELEASE_SETTINGS[currentLanguage] || STREAM_RELEASE_SETTINGS.zh;
 }
 
 function getRepoLinkHref() {
@@ -2182,17 +2194,19 @@ function advanceStreamRevealIndex(source, startIndex, visibleBudget) {
 }
 
 function runStreamRelease(now) {
+  const { visibleCharsPerSecond, maxVisibleCharsPerFrame } = getStreamReleaseSettings();
+
   if (!streamReleaseLastTime) {
     streamReleaseLastTime = now;
   }
 
   const elapsed = now - streamReleaseLastTime;
   streamReleaseLastTime = now;
-  streamReleaseCarry += (elapsed * STREAM_VISIBLE_CHARS_PER_SECOND) / 1000;
+  streamReleaseCarry += (elapsed * visibleCharsPerSecond) / 1000;
 
   const visibleBudget = Math.min(
     Math.floor(streamReleaseCarry),
-    STREAM_MAX_VISIBLE_CHARS_PER_FRAME
+    maxVisibleCharsPerFrame
   );
   const { nextIndex, consumedVisible } = advanceStreamRevealIndex(
     incomingStreamText,
