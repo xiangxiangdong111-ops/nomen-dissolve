@@ -1419,6 +1419,7 @@ const userInput = document.getElementById('userInput');
 const inputResizeHandle = document.getElementById('inputResizeHandle');
 const inputWrapper = document.querySelector('.input-wrapper');
 const dissolveBtn = document.getElementById('dissolveBtn');
+const sectionDivider = document.querySelector('.section-divider');
 const waiting = document.getElementById('waiting');
 const resultSection = document.getElementById('resultSection');
 const resultContent = document.getElementById('resultContent');
@@ -1488,6 +1489,7 @@ let revealResetTimer = null;
 let streamFollowFrame = null;
 let streamFollowUntil = 0;
 let streamReleaseFrame = null;
+let waitingScrollTimer = null;
 let incomingStreamText = '';
 let revealedStreamIndex = 0;
 let streamReleaseCarry = 0;
@@ -1496,6 +1498,36 @@ let streamNetworkDone = false;
 let inputResizeSession = null;
 
 const INPUT_MIN_HEIGHT = 160;
+
+function isCompactViewport() {
+  return window.matchMedia('(max-width: 640px)').matches;
+}
+
+function scrollWaitingIntoPrimaryView() {
+  if (!sectionDivider || !isCompactViewport()) {
+    return;
+  }
+
+  const targetTop = Math.max(0, window.scrollY + sectionDivider.getBoundingClientRect().top - 12);
+  window.scrollTo({ top: targetTop, behavior: 'smooth' });
+}
+
+function scheduleWaitingViewportFocus() {
+  if (!isCompactViewport()) {
+    return;
+  }
+
+  userInput.blur();
+
+  if (waitingScrollTimer) {
+    clearTimeout(waitingScrollTimer);
+  }
+
+  waitingScrollTimer = setTimeout(() => {
+    waitingScrollTimer = null;
+    scrollWaitingIntoPrimaryView();
+  }, 160);
+}
 
 function stopInputResize() {
   if (!inputResizeSession) {
@@ -1792,6 +1824,7 @@ function prepareStreamingUI() {
   errorMsg.classList.remove('active');
   resultTagLabel.textContent = DEFAULT_RESULT_TAG;
   waiting.classList.add('active');
+  scheduleWaitingViewportFocus();
   resultContent.innerHTML = '';
   applyStreamingRevealState(false);
   resultContentViewport.style.maxHeight = '0px';
