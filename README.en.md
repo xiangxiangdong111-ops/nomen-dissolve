@@ -14,7 +14,6 @@ Live links:
 
 - GitHub Pages (default Chinese): https://xiangxiangdong111-ops.github.io/nomen-dissolve/
 - GitHub Pages (English): https://xiangxiangdong111-ops.github.io/nomen-dissolve/?lang=en
-- GitHub Repository: https://github.com/xiangxiangdong111-ops/nomen-dissolve
 
 What this page hopes to do:
 
